@@ -226,21 +226,28 @@
     }
     .terminal p { margin-bottom: 4px; line-height: 1.5; }
 
-    /* ── Before/After 슬라이더 ── */
+    /* ── Before/After 슬라이더 (완벽 비율 수정본) ── */
     #slider-container {
       width:100%; height:200px;
       border-radius:14px; overflow:hidden;
       position:relative; background:#ddd;
       touch-action: none;
     }
-    #slider-container img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
-    #slider-before {
-      position:absolute; top:0; left:0; height:100%; overflow:hidden;
-      border-right:2px solid #fff; z-index:2; pointer-events:none;
+    #slider-container img { 
+      position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; 
     }
-    #slider-before img { position:absolute; top:0; left:0; height:100%; width:350px; object-fit:cover; }
+    #slider-before {
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      clip-path: inset(0 50% 0 0); /* 오른쪽을 50% 잘라냄 */
+      z-index:2; pointer-events:none;
+    }
+    .slider-line {
+      position:absolute; top:0; left:50%; width:2px; height:100%;
+      background:#fff; z-index:3; pointer-events:none;
+      transform:translateX(-50%);
+    }
     #slider-range {
-      position:absolute; inset:0; opacity:0; cursor:ew-resize; z-index:5;
+      position:absolute; inset:0; opacity:0; cursor:ew-resize; z-index:5; width:100%; height:100%;
     }
     .slider-handle {
       position:absolute; top:50%; left:50%; z-index:4; pointer-events:none;
@@ -451,7 +458,7 @@
               <span class="badge purple">적용</span>
             </div>
             <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
-              <div><div style="font-size:13px;font-weight:700;color:#1f2937">지자체 매칭 예산 2,000만</div><div style="font-size:10px;color:#9ca3af">2026.06.10 · △△상인회</div></div>
+              <div><div style="font-size:13px;font-weight:700;color:#1f2937">지자체 매칭 예산 2,000만</div><div style="font-size:10px;color:#9ca3af">2026.06.10 · 세모상인회</div></div>
               <span class="badge green">완료</span>
             </div>
           </div>
@@ -566,13 +573,14 @@
           
           <div id="slider-container">
             <img id="ai-img-after" src="" alt="After">
-            <div id="slider-before" style="width:50%">
+            <div id="slider-before">
               <img id="ai-img-before" src="" alt="Before">
               <div style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px">지원 전</div>
             </div>
+            <div class="slider-line" id="slider-line"></div>
             <div style="position:absolute;bottom:8px;right:8px;background:#7c3aed;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:3">지원 후</div>
-            <div class="slider-handle"><i style="font-style:normal;">↔️</i></div>
-            <input type="range" id="slider-range" min="0" max="100" value="50" oninput="document.getElementById('slider-before').style.width=this.value+'%'">
+            <div class="slider-handle" id="slider-handle"><i style="font-style:normal;">↔️</i></div>
+            <input type="range" id="slider-range" min="0" max="100" value="50" oninput="updateSlider(this.value)">
           </div>
 
           <div style="background:#f9fafb; border-radius:12px; padding:12px; margin-top:12px; font-size:12px; line-height:1.6;">
@@ -818,8 +826,8 @@
     },
     shop2: {
       title: "△△거리 도로 개선 분석",
-      beforeImg: "shop2_before.jpg",
-      afterImg: "shop2_after.jpg",
+      beforeImg: "shop2_before.png",
+      afterImg: "shop2_after.png",
       textBefore: "보행이 불편하고 노후화되어 정비가 필요했던 기존 골목길",
       textAfter: "획일적인 포장만 진행되어 상권 활성화로 이어지지 못한 한산한 거리",
       score: 44, 
@@ -838,8 +846,8 @@
     },
     shop3: {
       title: "□□상점가 야외 펍 축제 분석",
-      beforeImg: "shop3_before.jpg",
-      afterImg: "shop3_after.jpg",
+      beforeImg: "shop3_before.png",
+      afterImg: "shop3_after.png",
       textBefore: "사람들도 잘 안 지나다니고 어두웠던 일반적인 저녁 상점가",
       textAfter: "차 없는 거리를 조성하고 야외 테이블을 내놓아 유럽 펍 축제로 전환",
       score: 95,
@@ -905,7 +913,15 @@
     }
   }
 
-  // ── 3. 부분 코드의 핵심 비즈니스 로직 적용 ──
+  // ── 3. 슬라이더 완벽 비율 조절 함수 ──
+  function updateSlider(val) {
+    // 이미지를 자르는 영역(clip-path) 조절하여 1:1 완벽 매칭
+    document.getElementById('slider-before').style.clipPath = `inset(0 ${100 - val}% 0 0)`;
+    document.getElementById('slider-line').style.left = val + '%';
+    document.getElementById('slider-handle').style.left = val + '%';
+  }
+
+  // ── 4. 부분 코드의 핵심 비즈니스 로직 적용 ──
   function changeShop(id, btn) {
     const data = shopData[id];
     
@@ -963,12 +979,12 @@
     }
 
     // 슬라이더 초기화
-    document.getElementById('slider-before').style.width = '50%';
+    updateSlider(50);
     document.getElementById('slider-range').value = 50;
     toast(data.title + " 데이터 로드 완료");
   }
 
-  // ── 4. 부가 기능 (GPS, 투표, 차트) ──
+  // ── 5. 부가 기능 (GPS, 투표, 차트) ──
   function simGPS(g) {
     const log = document.getElementById('gps-log');
     const t = new Date(); const ts = `${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
