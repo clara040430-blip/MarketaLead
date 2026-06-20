@@ -405,6 +405,7 @@
 
     <div class="tab-content no-scroll">
 
+      <!-- 탭 1: 대시보드 -->
       <div id="tab-dashboard" class="view-section active">
 
         <div class="hero-card">
@@ -465,6 +466,7 @@
         </div>
       </div>
 
+      <!-- 탭 2: 플랫폼/DB -->
       <div id="tab-platform" class="view-section">
 
         <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f3f0ff;position:sticky;top:0;z-index:20">
@@ -478,12 +480,13 @@
         <div id="public-view">
           <div style="font-size:11px;color:#9ca3af;font-weight:700;padding:10px 14px 4px">총 842건 · 무결성 검증 완료</div>
 
+          <!-- 동그라미 (○○상점) - 영상 -->
           <div class="card" onclick="openBS()" style="cursor:pointer">
             <div style="display:flex;align-items:center;gap:12px">
               <i style="font-size:28px;color:#8b5cf6; font-style:normal;">🎬</i>
               <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_report_260618.mp4</div>
-                <div style="font-size:10px;color:#9ca3af">□□상점가 · 15MB</div>
+                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_shop1_signboard.mp4</div>
+                <div style="font-size:10px;color:#9ca3af">○○상점 · 15MB</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
                 <span class="badge red">AI 분류: 보안</span>
@@ -492,12 +495,13 @@
             </div>
           </div>
 
+          <!-- 네모 (□□상점가) - 영상 -->
           <div class="card" onclick="openBS()" style="cursor:pointer">
             <div style="display:flex;align-items:center;gap:12px">
-              <i style="font-size:28px;color:#10b981; font-style:normal;">🖼️</i>
+              <i style="font-size:28px;color:#8b5cf6; font-style:normal;">🎬</i>
               <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:#1f2937">img_before_after_01.jpg</div>
-                <div style="font-size:10px;color:#9ca3af">○○상점 · 2.4MB</div>
+                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_shop3_pub.mp4</div>
+                <div style="font-size:10px;color:#9ca3af">□□상점가 · 28MB</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
                 <span class="badge green">AI 분류: 공개</span>
@@ -506,12 +510,13 @@
             </div>
           </div>
 
+          <!-- 세모 (△△거리) - 사진만 -->
           <div class="card" onclick="toast('현재 행정 검토 중인 데이터입니다.')" style="cursor:pointer">
             <div style="display:flex;align-items:center;gap:12px">
-              <i style="font-size:28px;color:#9ca3af; font-style:normal;">🎬</i>
+              <i style="font-size:28px;color:#9ca3af; font-style:normal;">🖼️</i>
               <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_street_view_new.mp4</div>
-                <div style="font-size:10px;color:#9ca3af">△△거리 상인회 · 45MB</div>
+                <div style="font-size:13px;font-weight:700;color:#1f2937">img_shop2_street.png</div>
+                <div style="font-size:10px;color:#9ca3af">△△거리 상인회 · 4.2MB</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
                 <span class="badge orange">검토 중</span>
@@ -520,6 +525,7 @@
             </div>
           </div>
 
+          <!-- 마일스톤 영상 업로드 -->
           <div class="card">
             <div class="card-title"><i style="font-style:normal;">📤</i>마일스톤 영상 업로드 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">141 모듈</span></div>
             <div style="display:flex;flex-direction:column;gap:8px">
@@ -545,19 +551,24 @@
             <i style="color:#ef4444;font-size:22px; font-style:normal;">📺</i>
             <span style="font-weight:700;font-size:16px">YouTube API 연동</span>
           </div>
-          <div class="card" onclick="toast('유튜브 영상 재생 (외부 플랫폼)')">
-            <img src="thumb_video1.jpg" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px" alt="영상썸네일">
-            <div style="font-size:13px;font-weight:700;color:#1f2937">○○상점 간판 정비 및 인테리어 영상</div>
+
+          <!-- 동그라미(○○상점) 영상 재생 - 썸네일 .png 적용 -->
+          <div class="card">
+            <video src="video1.mp4" poster="thumb_video1.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+            <div style="font-size:13px;font-weight:700;color:#1f2937">○○상점 간판 정비 성공 사례</div>
             <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 1.2만회 · 2일 전</div>
           </div>
-          <div class="card" onclick="toast('유튜브 영상 재생 (외부 플랫폼)')">
-            <img src="thumb_video2.jpg" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px" alt="영상썸네일">
-            <div style="font-size:13px;font-weight:700;color:#1f2937">△△거리 보행로 개선 공사 완료</div>
-            <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 8,400회 · 1주일 전</div>
+
+          <!-- 네모(□□상점가) 영상 재생 - 썸네일 .png 적용 -->
+          <div class="card">
+            <video src="video2.mp4" poster="thumb_video2.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+            <div style="font-size:13px;font-weight:700;color:#1f2937">□□상점가 야외 펍 축제 성공 사례</div>
+            <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 2.5만회 · 1일 전</div>
           </div>
         </div>
       </div>
 
+      <!-- 탭 3: AI 분석 -->
       <div id="tab-ai" class="view-section">
         <div style="padding:12px 14px 0;display:flex;gap:8px;overflow-x:auto" class="no-scroll">
           <button class="shop-btn active-btn" onclick="changeShop('shop1',this)" style="padding:8px 16px;border-radius:20px;border:none;background:#7c3aed;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">○○상점</button>
@@ -609,6 +620,7 @@
         </div>
       </div>
 
+      <!-- 탭 4: 검증/투표 -->
       <div id="tab-data" class="view-section">
         <div class="card">
           <div class="card-title"><i style="font-style:normal;">📍</i>투표 권한 GPS 실시간 검증 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">150 모듈</span></div>
@@ -661,6 +673,7 @@
         </div>
       </div>
 
+      <!-- 탭 5: 벤치마킹 -->
       <div id="tab-benchmarking" class="view-section">
         <div class="hero-card" style="position:relative;overflow:hidden" onclick="toast('□□상점가 교과서 데이터 패키징 완료!')">
           <i style="position:absolute;bottom:-10px;right:-10px;font-size:80px;opacity:0.15; font-style:normal;">👑</i>
@@ -846,7 +859,7 @@
     },
     shop3: {
       title: "□□상점가 야외 펍 축제 분석",
-      beforeImg: "shop3_before.png",
+      beforeImg: "shop3_before.jpg",
       afterImg: "shop3_after.png",
       textBefore: "사람들도 잘 안 지나다니고 어두웠던 일반적인 저녁 상점가",
       textAfter: "차 없는 거리를 조성하고 야외 테이블을 내놓아 유럽 펍 축제로 전환",
