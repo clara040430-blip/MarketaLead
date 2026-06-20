@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>상권 활성화 지원 시스템</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #fff;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ── 전체 앱 래퍼 ── */
+    #app {
+      width: 100vw;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── 로그인 화면 ── */
+    #view-login {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #4c1d95 0%, #5b21b6 50%, #7c3aed 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s;
+    }
+    #view-login .login-icon { font-size: 56px; margin-bottom: 16px; }
+    #view-login h1 { font-size: 22px; font-weight: 800; color: #fff; text-align: center; line-height: 1.4; margin-bottom: 6px; }
+    #view-login p { font-size: 12px; color: #c4b5fd; margin-bottom: 40px; }
+    .login-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 28px 24px;
+      width: 80%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .avatar {
+      width: 64px; height: 64px;
+      background: #ede9fe;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800; color: #7c3aed;
+      margin: 0 auto 12px;
+    }
+    .login-card h2 { font-size: 16px; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+    .login-card p { font-size: 11px; color: #6b7280; margin-bottom: 20px; }
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+    }
+
+    /* ── 메인 앱 ── */
+    #main-app {
+      display: none;
+      flex-direction: column;
+      width: 100vw;
+      height: 100dvh;
+    }
+
+    /* ── 헤더 ── */
+    .app-header {
+      background: #fff;
+      padding: 52px 20px 14px;
+      border-bottom: 1px solid #f3f0ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.07);
+    }
+    .header-badge {
+      font-size: 10px; font-weight: 700;
+      color: #7c3aed; border: 1px solid #7c3aed;
+      padding: 2px 8px; border-radius: 6px;
+      display: inline-block; margin-bottom: 4px;
+    }
+    .app-header h2 { font-size: 20px; font-weight: 800; color: #1f2937; }
+    .bell-btn { position: relative; cursor: pointer; padding: 4px; }
+    .bell-btn i { font-size: 20px; color: #374151; }
+    .badge-dot {
+      position: absolute; top: 0; right: 0;
+      background: #ef4444; color: #fff;
+      font-size: 9px; font-weight: 700;
+      padding: 1px 4px; border-radius: 10px;
+    }
+
+    /* ── 스크롤 영역 ── */
+    .tab-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      background: #f5f3ff;
+      padding-bottom: 20px;
+    }
+
+    /* ── 하단 네비게이션 ── */
+    .bottom-nav {
+      background: #fff;
+      border-top: 1px solid #ede9fe;
+      display: flex;
+      height: 64px;
+      padding-bottom: env(safe-area-inset-bottom);
+      flex-shrink: 0;
+      z-index: 50;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; color: #9ca3af;
+      font-size: 10px; font-weight: 600; gap: 3px;
+      transition: color 0.2s;
+    }
+    .nav-item i { font-size: 18px; }
+    .nav-item.active { color: #7c3aed; }
+
+    /* ── 토스트 ── */
+    #toast-wrap {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 200;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      pointer-events: none;
+    }
+    .toast-msg {
+      background: #4c1d95;
+      color: #fff;
+      font-size: 12px; font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 24px;
+      white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      animation: toastAnim 2.5s ease forwards;
+    }
+    @keyframes toastAnim {
+      0%   { opacity:0; transform:translateY(10px); }
+      12%  { opacity:1; transform:translateY(0); }
+      80%  { opacity:1; }
+      100% { opacity:0; transform:translateY(-6px); }
+    }
+
+    /* ── 카드 공통 ── */
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px;
+      margin: 12px 14px 0;
+      box-shadow: 0 2px 12px rgba(124,58,237,0.08);
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: #374151;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── 진행바 ── */
+    .prog-wrap { background: #ede9fe; border-radius: 8px; height: 7px; overflow: hidden; }
+    .prog-bar  { height: 100%; border-radius: 8px; background: linear-gradient(90deg,#7c3aed,#8b5cf6); transition: width 0.6s; }
+    .prog-bar.orange { background: linear-gradient(90deg,#f97316,#fb923c); }
+    .prog-bar.red    { background: linear-gradient(90deg,#ef4444,#f87171); }
+    .prog-bar.green  { background: linear-gradient(90deg,#10b981,#34d399); }
+
+    /* ── 배지 ── */
+    .badge { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; }
+    .badge.green  { background:#d1fae5; color:#065f46; }
+    .badge.orange { background:#ffedd5; color:#92400e; }
+    .badge.red    { background:#fee2e2; color:#991b1b; }
+    .badge.purple { background:#ede9fe; color:#6d28d9; }
+    .badge.blue   { background:#dbeafe; color:#1e40af; }
+
+    /* ── 그라디언트 히어로 카드 ── */
+    .hero-card {
+      background: linear-gradient(135deg,#4c1d95 0%,#7c3aed 100%);
+      border-radius: 20px;
+      padding: 22px 20px;
+      margin: 12px 14px 0;
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(124,58,237,0.35);
+    }
+    .hero-card .sub { font-size:11px; color:#c4b5fd; font-weight:600; margin-bottom:4px; }
+    .hero-card .score { font-size:42px; font-weight:800; line-height:1; }
+    .hero-card .score span { font-size:16px; font-weight:400; color:#c4b5fd; margin-left:4px; }
+    .hero-card .trend { font-size:11px; color:#a78bfa; margin-top:6px; }
+
+    /* ── 섹션 뷰 ── */
+    .view-section { display:none; }
+    .view-section.active { display:block; }
+
+    /* ── GPS 터미널 ── */
+    .terminal {
+      background: #0f0721;
+      border-radius: 14px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      height: 120px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .terminal p { margin-bottom: 4px; line-height: 1.5; }
+
+    /* ── Before/After 슬라이더 ── */
+    #slider-container {
+      width:100%; height:200px;
+      border-radius:14px; overflow:hidden;
+      position:relative; background:#ddd;
+      touch-action: none;
+    }
+    #slider-container img { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+    #slider-before {
+      position:absolute; top:0; left:0; height:100%; overflow:hidden;
+      border-right:2px solid #fff; z-index:2; pointer-events:none;
+    }
+    #slider-before img { position:absolute; top:0; left:0; height:100%; width:350px; object-fit:cover; }
+    #slider-range {
+      position:absolute; inset:0; opacity:0; cursor:ew-resize; z-index:5;
+    }
+    .slider-handle {
+      position:absolute; top:50%; left:50%; z-index:4; pointer-events:none;
+      transform:translate(-50%,-50%);
+      background:#fff; border-radius:50%; width:36px; height:36px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 2px 12px rgba(0,0,0,0.3); color:#7c3aed; font-size:14px;
+    }
+
+    /* ── 바텀시트 ── */
+    #bottom-sheet {
+      position:fixed; bottom:0; left:0; right:0;
+      background:#fff; border-radius:24px 24px 0 0;
+      padding:24px 20px 40px;
+      z-index:150;
+      transform:translateY(100%);
+      transition:transform 0.3s ease;
+      box-shadow:0 -8px 40px rgba(0,0,0,0.15);
+    }
+    #bottom-sheet.open { transform:translateY(0); }
+    #bs-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.4);
+      z-index:140; display:none;
+    }
+    #bs-overlay.open { display:block; }
+
+    /* ── 타임라인 ── */
+    .timeline-step {
+      display:flex; align-items:flex-start; gap:12px;
+      margin-bottom:14px; position:relative;
+    }
+    .step-icon {
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; flex-shrink:0;
+      margin-top:2px;
+    }
+    .step-icon.done   { background:#7c3aed; color:#fff; }
+    .step-icon.active { background:#f59e0b; color:#fff; }
+    .step-icon.wait   { background:#e5e7eb; color:#9ca3af; }
+    .step-line {
+      position:absolute; left:13px; top:30px;
+      width:2px; height:calc(100% - 4px);
+      background:#e5e7eb;
+    }
+    .step-icon.done ~ .step-line { background:#7c3aed; }
+
+    /* ── 체크박스 투표 ── */
+    .vote-item {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 14px; background:#faf5ff;
+      border:2px solid #ede9fe; border-radius:12px;
+      margin-bottom:8px; cursor:pointer;
+    }
+    .vote-item.checked { border-color:#7c3aed; background:#f5f3ff; }
+    .vote-check {
+      width:22px; height:22px; border-radius:6px;
+      border:2px solid #d1d5db;
+      display:flex; align-items:center; justify-content:center;
+      font-size:13px; flex-shrink:0; transition:all 0.2s;
+    }
+    .vote-item.checked .vote-check {
+      background:#7c3aed; border-color:#7c3aed; color:#fff;
+    }
+    .vote-item label { font-size:13px; font-weight:600; color:#374151; cursor:pointer; }
+
+    /* ── 수평 스크롤 카드 ── */
+    .hscroll { display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding:4px 0 8px; }
+    .hscroll::-webkit-scrollbar { display:none; }
+    .h-card {
+      min-width:160px; background:#fff; border-radius:16px;
+      padding:14px 16px; box-shadow:0 2px 10px rgba(124,58,237,0.1);
+      border:1px solid #ede9fe; flex-shrink:0;
+    }
+
+    /* ── 테이블 ── */
+    .data-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 0; border-bottom:1px solid #f3f4f6; gap:8px;
+    }
+    .data-row:last-child { border-bottom:none; }
+    .data-label { font-size:12px; color:#6b7280; flex:1; }
+    .data-val   { font-size:12px; font-weight:700; color:#374151; text-align:right; }
+    .data-bar-wrap { flex:1; }
+
+    /* ── 토글 스위치 ── */
+    .toggle-wrap { position:relative; display:inline-block; width:48px; height:26px; }
+    .toggle-wrap input { opacity:0; width:0; height:0; }
+    .toggle-slider {
+      position:absolute; cursor:pointer;
+      top:0; left:0; right:0; bottom:0;
+      background:#d1d5db; border-radius:26px;
+      transition:0.3s;
+    }
+    .toggle-slider:before {
+      position:absolute; content:"";
+      height:20px; width:20px;
+      left:3px; bottom:3px;
+      background:#fff; border-radius:50%;
+      transition:0.3s;
+    }
+    .toggle-wrap input:checked + .toggle-slider { background:#7c3aed; }
+    .toggle-wrap input:checked + .toggle-slider:before { transform:translateX(22px); }
+
+    /* ── 공모 가점 테이블 ── */
+    .score-row {
+      display:flex; justify-content:space-between;
+      padding:10px 14px; border-radius:10px;
+      margin-bottom:6px; background:#f5f3ff;
+    }
+    .score-row .label { font-size:12px; color:#4b5563; }
+    .score-row .val   { font-size:13px; font-weight:800; color:#7c3aed; }
+    .score-total {
+      background: linear-gradient(135deg,#5b21b6,#7c3aed);
+      color:#fff; border-radius:14px;
+      padding:14px 16px; margin-top:10px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .score-total .t-label { font-size:12px; color:#c4b5fd; }
+    .score-total .t-val   { font-size:18px; font-weight:800; }
+
+    .no-scroll::-webkit-scrollbar { display:none; }
+    .no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div id="view-login">
+    <i class="login-icon" style="font-style: normal;">🏛️</i>
+    <h1>공공 예산 연동형<br>상권 활성화 지원 시스템</h1>
+    <p>누적 데이터 1,420건 · AI 진단 준비 완료</p>
+    <div class="login-card">
+      <div class="avatar">홍</div>
+      <h2>홍석기 센터장</h2>
+      <p>서구청 · 마스터 권한</p>
+      <button class="login-btn" onclick="doLogin()">
+        <i style="margin-right:6px; font-style:normal;">🛡️</i>보안 시스템 접속
+      </button>
+    </div>
+  </div>
+
+  <div id="main-app">
+
+    <div class="app-header">
+      <div>
+        <div class="header-badge">서구청 마스터 권한</div>
+        <h2>홍석기 센터장님 👋</h2>
+      </div>
+      <div class="bell-btn" onclick="toast('새로운 행정 알림이 3건 있습니다.')">
+        <i style="font-style:normal;">🔔</i>
+        <span class="badge-dot">3</span>
+      </div>
+    </div>
+
+    <div class="tab-content no-scroll">
+
+      <div id="tab-dashboard" class="view-section active">
+
+        <div class="hero-card">
+          <div class="sub">서구 통합 성과 지표 · 실시간</div>
+          <div class="score">92<span>점</span></div>
+          <div class="trend"><i style="color:#34d399; font-style:normal;">⬆️</i> 전월 대비 4.2% 상승</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🧠</i>AI 성공 가능성 예측 현황 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">117 모듈</span></div>
+          <div class="hscroll">
+            <div class="h-card" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
+              <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">동그라미 상점가</div>
+              <div style="font-size:26px;font-weight:800;color:#7c3aed">87%</div>
+              <div class="prog-wrap" style="margin:6px 0"><div class="prog-bar" style="width:87%"></div></div>
+              <span class="badge green">우수</span>
+            </div>
+            <div class="h-card" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
+              <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">세모세모 카페거리</div>
+              <div style="font-size:26px;font-weight:800;color:#f97316">63%</div>
+              <div class="prog-wrap" style="margin:6px 0"><div class="prog-bar orange" style="width:63%"></div></div>
+              <span class="badge orange">처방 필요</span>
+            </div>
+            <div class="h-card" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
+              <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">별빛 전통시장</div>
+              <div style="font-size:26px;font-weight:800;color:#ef4444">41%</div>
+              <div class="prog-wrap" style="margin:6px 0"><div class="prog-bar red" style="width:41%"></div></div>
+              <span class="badge red">취약</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">📡</i>기지국 유동인구 밀집도 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">160·161 모듈</span></div>
+          <canvas id="popChart" height="130"></canvas>
+          <div style="margin-top:10px;display:flex;gap:16px">
+            <div style="font-size:11px;color:#6b7280">🕐 피크타임: <b style="color:#7c3aed">13:00~15:00</b></div>
+            <div style="font-size:11px;color:#6b7280">⏱ 평균 체류: <b style="color:#7c3aed">42분</b></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🕒</i>누적 인센티브 정산 기록 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">총 128건</span></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
+              <div><div style="font-size:13px;font-weight:700;color:#1f2937">온누리 페이백 15% 승인</div><div style="font-size:10px;color:#9ca3af">2026.06.18 · 동그라미 상점가</div></div>
+              <span class="badge green">완료</span>
+            </div>
+            <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
+              <div><div style="font-size:13px;font-weight:700;color:#1f2937">중기부 공모 가점 +5점</div><div style="font-size:10px;color:#9ca3af">2026.06.15 · 별빛거리</div></div>
+              <span class="badge purple">적용</span>
+            </div>
+            <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
+              <div><div style="font-size:13px;font-weight:700;color:#1f2937">지자체 매칭 예산 2,000만</div><div style="font-size:10px;color:#9ca3af">2026.06.10 · 세모상인회</div></div>
+              <span class="badge green">완료</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-platform" class="view-section">
+
+        <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f3f0ff;position:sticky;top:0;z-index:20">
+          <span id="platform-title" style="font-size:13px;font-weight:700;color:#374151">공공 전용 영상 DB (보안)</span>
+          <label class="toggle-wrap">
+            <input type="checkbox" id="platform-toggle" checked onchange="togglePlatform()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div id="public-view">
+          <div style="font-size:11px;color:#9ca3af;font-weight:700;padding:10px 14px 4px">총 842건 · 무결성 검증 완료</div>
+
+          <div class="card" onclick="openBS()" style="cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px">
+              <i style="font-size:28px;color:#8b5cf6; font-style:normal;">🎬</i>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_report_260618.mp4</div>
+                <div style="font-size:10px;color:#9ca3af">세모세모 카페 · 15MB</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                <span class="badge red">AI 분류: 보안</span>
+                <i style="color:#ef4444;font-size:14px; font-style:normal;">🔒</i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" onclick="openBS()" style="cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px">
+              <i style="font-size:28px;color:#10b981; font-style:normal;">🖼️</i>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;color:#1f2937">img_before_after_01.jpg</div>
+                <div style="font-size:10px;color:#9ca3af">네모 베이커리 · 2.4MB</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                <span class="badge green">AI 분류: 공개</span>
+                <i style="color:#10b981;font-size:14px; font-style:normal;">🔓</i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" onclick="toast('현재 행정 검토 중인 데이터입니다.')" style="cursor:pointer">
+            <div style="display:flex;align-items:center;gap:12px">
+              <i style="font-size:28px;color:#9ca3af; font-style:normal;">🎬</i>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_street_view_new.mp4</div>
+                <div style="font-size:10px;color:#9ca3af">별빛거리 상인회 · 45MB</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                <span class="badge orange">검토 중</span>
+                <i style="color:#f59e0b;font-size:14px; font-style:normal;">⏳</i>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><i style="font-style:normal;">📤</i>마일스톤 영상 업로드 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">141 모듈</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">
+                <i style="color:#10b981;font-size:18px; font-style:normal;">✅</i>
+                <div><div style="font-size:12px;font-weight:700;color:#065f46">M1 초기 단계</div><div style="font-size:10px;color:#6b7280">업로드 완료 · 2026.04.01</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">
+                <i style="color:#10b981;font-size:18px; font-style:normal;">✅</i>
+                <div><div style="font-size:12px;font-weight:700;color:#065f46">M2 중간 점검</div><div style="font-size:10px;color:#6b7280">업로드 완료 · 2026.05.20</div></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#faf5ff;border-radius:12px;border:2px dashed #c4b5fd;cursor:pointer" onclick="uploadM3()">
+                <i style="color:#8b5cf6;font-size:18px; font-style:normal;">☁️</i>
+                <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#7c3aed">M3 최종 결과</div><div style="font-size:10px;color:#9ca3af">업로드 대기 중</div></div>
+                <i style="color:#c4b5fd;font-size:12px; font-style:normal;">▶️</i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="youtube-view" style="display:none">
+          <div style="padding:10px 14px;background:#fff;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f3f4f6">
+            <i style="color:#ef4444;font-size:22px; font-style:normal;">📺</i>
+            <span style="font-weight:700;font-size:16px">YouTube API 연동</span>
+          </div>
+          <div class="card" onclick="toast('유튜브 영상 재생 (외부 플랫폼)')">
+            <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500&q=80" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px">
+            <div style="font-size:13px;font-weight:700;color:#1f2937">세모세모 카페 인테리어 정비 영상</div>
+            <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 1.2만회 · 2일 전</div>
+          </div>
+          <div class="card" onclick="toast('유튜브 영상 재생 (외부 플랫폼)')">
+            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80" style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px">
+            <div style="font-size:13px;font-weight:700;color:#1f2937">네모 베이커리 도로 공사 완료</div>
+            <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 8,400회 · 1주일 전</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-ai" class="view-section">
+
+        <div style="padding:12px 14px 0;display:flex;gap:8px;overflow-x:auto" class="no-scroll">
+          <button class="shop-btn active-btn" onclick="changeShop('semo',this)" style="padding:8px 16px;border-radius:20px;border:none;background:#7c3aed;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">세모세모 카페</button>
+          <button class="shop-btn" onclick="changeShop('nemo',this)" style="padding:8px 16px;border-radius:20px;border:2px solid #e5e7eb;background:#fff;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">네모 베이커리</button>
+          <button class="shop-btn" onclick="changeShop('star',this)" style="padding:8px 16px;border-radius:20px;border:2px solid #e5e7eb;background:#fff;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">별빛 식당</button>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div class="card-title" style="margin-bottom:0"><i style="font-style:normal;">📷</i><span id="ai-shop-title">세모세모 카페 분석</span></div>
+            <span class="badge red" style="font-size:10px"><i style="margin-right:3px; font-style:normal;">🔒</i>무결성 락</span>
+          </div>
+          <div id="slider-container">
+            <img id="ai-img-after" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500&q=80">
+            <div id="slider-before" style="width:50%">
+              <img id="ai-img-before" src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=500&q=80">
+              <div style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.7);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px">Before</div>
+            </div>
+            <div style="position:absolute;bottom:8px;right:8px;background:#7c3aed;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;z-index:3">After</div>
+            <div class="slider-handle"><i style="font-style:normal;">↔️</i></div>
+            <input type="range" id="slider-range" min="0" max="100" value="50" oninput="document.getElementById('slider-before').style.width=this.value+'%'">
+          </div>
+          <div style="background:#f5f3ff;border-radius:12px;padding:12px;margin-top:10px">
+            <div style="font-size:13px;font-weight:700;color:#4c1d95"><i style="margin-right:6px; font-style:normal;">🤖</i>AI 변화 인식률: <span id="ai-score" style="font-size:22px;color:#7c3aed">98%</span></div>
+            <div class="prog-wrap" style="margin-top:8px"><div id="ai-bar" class="prog-bar" style="width:98%"></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">📊</i>비포/애프터 환경 변화도 분석 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">142 모듈</span></div>
+          <div id="facility-table">
+            <div class="data-row">
+              <span class="data-label">간판 정비</span>
+              <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:90%"></div></div></div>
+              <span class="data-val" style="color:#7c3aed">+300%</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">도로/보도블록</span>
+              <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:92%"></div></div></div>
+              <span class="data-val" style="color:#7c3aed">+47%p</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">건물 외관</span>
+              <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:78%"></div></div></div>
+              <span class="data-val" style="color:#7c3aed">+147%</span>
+            </div>
+            <div class="data-row">
+              <span class="data-label">조명 환경</span>
+              <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:53%"></div></div></div>
+              <span class="data-val" style="color:#7c3aed">+53%p</span>
+            </div>
+          </div>
+          <div style="margin-top:12px;background:#4c1d95;color:#fff;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#c4b5fd">종합 물리적 환경 개선 점수</span>
+            <span style="font-size:20px;font-weight:800" id="total-score">78점 / 100점</span>
+          </div>
+        </div>
+
+        <div id="prescription-card" class="card" style="display:none">
+          <div class="card-title"><i style="color:#f59e0b; font-style:normal;">⚠️</i>AI 취약점 처방 지표 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">117 모듈</span></div>
+          <div style="display:flex;flex-direction:column;gap:8px" id="prescription-list"></div>
+          <button onclick="toast('동그라미 상점가 교과서 템플릿을 별빛 식당에 전송합니다.')" style="margin-top:12px;width:100%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:none;cursor:pointer">
+            <i style="margin-right:6px; font-style:normal;">🚀</i>선도 상권 벤치마킹 데이터 요청
+          </button>
+        </div>
+
+        <div id="good-card" class="card" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px">
+            <i style="font-size:28px;color:#7c3aed; font-style:normal;">🏆</i>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#1f2937">우수 상권 — 처방 불필요</div>
+              <div style="font-size:11px;color:#6b7280;margin-top:2px">성공 가능성 기준치(70%) 초과 달성</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-data" class="view-section">
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">📍</i>투표 권한 GPS 실시간 검증 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">150 모듈</span></div>
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <button onclick="simGPS(1)" style="flex:1;padding:9px 4px;background:#f5f3ff;border:1px solid #ddd6fe;color:#7c3aed;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">[1집단] 상인</button>
+            <button onclick="simGPS(2)" style="flex:1;padding:9px 4px;background:#fffbeb;border:1px solid #fed7aa;color:#92400e;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">[2집단] 거주민</button>
+            <button onclick="simGPS(3)" style="flex:1;padding:9px 4px;background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">[3집단] 방문객</button>
+          </div>
+          <div class="terminal no-scroll" id="gps-log">
+            <p style="color:#6b7280">> GPS 권한 검증 모듈 대기 중...</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🛡️</i>실시간 투표 어뷰징 모니터링 <span style="font-size:10px;color:#10b981;font-weight:700;margin-left:auto">정상 1,420건</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#f0fdf4;padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0">
+              <span style="font-size:11px;font-weight:700;color:#374151">user77** (제2집단)</span>
+              <span style="font-size:11px;color:#6b7280">동그라미(O), 세모(O)</span>
+              <span style="font-size:11px;font-weight:700;color:#10b981">✓ 승인</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fef2f2;padding:10px 12px;border-radius:10px;border:1px solid #fecaca">
+              <span style="font-size:11px;font-weight:700;color:#374151">bot23** (미상)</span>
+              <span style="font-size:11px;color:#6b7280">몰표 시도 감지</span>
+              <span style="font-size:11px;font-weight:700;color:#ef4444">✗ 차단</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#f0fdf4;padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0">
+              <span style="font-size:11px;font-weight:700;color:#374151">merch** (제1집단)</span>
+              <span style="font-size:11px;color:#6b7280">원격 평가(반경 3km)</span>
+              <span style="font-size:11px;font-weight:700;color:#10b981">✓ 승인</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🗳️</i>복수 투표 어뷰징 차단 시뮬레이션 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">153 모듈</span></div>
+          <div id="vote-list">
+            <div class="vote-item" onclick="toggleVote(this,'동그라미 상점가')">
+              <div class="vote-check"></div><label>동그라미 상점가</label>
+            </div>
+            <div class="vote-item" onclick="toggleVote(this,'세모세모 카페거리')">
+              <div class="vote-check"></div><label>세모세모 카페거리</label>
+            </div>
+            <div class="vote-item" onclick="toggleVote(this,'별빛 전통시장')">
+              <div class="vote-check"></div><label>별빛 전통시장</label>
+            </div>
+            <div class="vote-item" onclick="toggleVote(this,'네모 베이커리 골목')">
+              <div class="vote-check"></div><label>네모 베이커리 골목</label>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:#7c3aed;font-weight:700;text-align:center" id="vote-count">현재 0개 선택됨</div>
+          <button onclick="submitVote()" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:none;cursor:pointer">투표 제출</button>
+        </div>
+      </div>
+
+      <div id="tab-benchmarking" class="view-section">
+
+        <div class="hero-card" style="position:relative;overflow:hidden" onclick="toast('동그라미 상점가 교과서 데이터 패키징 완료!')">
+          <i style="position:absolute;bottom:-10px;right:-10px;font-size:80px;opacity:0.15; font-style:normal;">👑</i>
+          <span class="badge" style="background:#fef08a;color:#713f12;margin-bottom:8px;display:inline-block">2026 선도 상권 모델</span>
+          <div style="font-size:24px;font-weight:800;margin-bottom:4px">동그라미 상점가</div>
+          <div style="font-size:12px;color:#c4b5fd">표준 임계치 달성 · 벤치마킹 데이터 패키징 완료</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🏆</i>선도 상권 성과 지표</div>
+          <div class="data-row">
+            <span class="data-label">최종 성공 확률</span>
+            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:87%"></div></div></div>
+            <span class="data-val">87%</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">유동인구 증가</span>
+            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:70%"></div></div></div>
+            <span class="data-val">+42%</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">상인회 활동도</span>
+            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:94%"></div></div></div>
+            <span class="data-val">94점</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">주민 평가 점수</span>
+            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:88%"></div></div></div>
+            <span class="data-val">88점</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">예산 대비 효율</span>
+            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:100%"></div></div></div>
+            <span class="data-val">132%</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🛣️</i>별빛 전통시장 개선 로드맵 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">처방 지표 기반</span></div>
+          <div style="padding-left:4px">
+            <div class="timeline-step">
+              <div class="step-icon done">✓</div>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#7c3aed">STEP 1 완료</div>
+                <div style="font-size:11px;color:#6b7280">마일스톤 M1 영상 업로드 완료</div>
+              </div>
+            </div>
+            <div class="timeline-step">
+              <div class="step-icon active">▶</div>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#f59e0b">STEP 2 진행 중</div>
+                <div style="font-size:11px;color:#6b7280;margin-bottom:6px">주민 평가 보강 활동 (달성률 62%)</div>
+                <div class="prog-wrap"><div class="prog-bar orange" style="width:62%"></div></div>
+              </div>
+            </div>
+            <div class="timeline-step">
+              <div class="step-icon wait">3</div>
+              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 3 대기</div><div style="font-size:11px;color:#9ca3af">상인회 영상 참여율 70% 달성 필요</div></div>
+            </div>
+            <div class="timeline-step">
+              <div class="step-icon wait">4</div>
+              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 4 대기</div><div style="font-size:11px;color:#9ca3af">기지국 유동인구 35분 체류 달성 필요</div></div>
+            </div>
+            <div class="timeline-step" style="margin-bottom:0">
+              <div class="step-icon wait">5</div>
+              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 5 대기</div><div style="font-size:11px;color:#9ca3af">M3 최종 영상 업로드 후 AI 재진단</div></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;background:#f0fdf4;border-radius:12px;padding:10px 14px;font-size:12px;color:#065f46;font-weight:700">
+            🎯 목표 달성 시 예상 성공 확률: <span style="font-size:16px;color:#10b981">71%</span> (기준치 70% 초과 예상)
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><i style="font-style:normal;">🗄️</i>과거 선도 상권 아카이브</div>
+          <div>
+            <div class="data-row" onclick="toast('2025 별빛거리 예산/영상 데이터를 다운로드합니다.')" style="cursor:pointer">
+              <div><div style="font-size:13px;font-weight:700;color:#1f2937">2025년: 별빛거리 상점가</div><div style="font-size:10px;color:#9ca3af">디지털 교과서 템플릿 v2.0 (45MB)</div></div>
+              <i style="color:#7c3aed;background:#f5f3ff;padding:8px;border-radius:10px;font-size:14px; font-style:normal;">📥</i>
+            </div>
+            <div class="data-row" onclick="toast('2024 푸른길 전통시장 데이터를 다운로드합니다.')" style="cursor:pointer">
+              <div><div style="font-size:13px;font-weight:700;color:#1f2937">2024년: 푸른길 전통시장</div><div style="font-size:10px;color:#9ca3af">디지털 교과서 템플릿 v1.0 (32MB)</div></div>
+              <i style="color:#7c3aed;background:#f5f3ff;padding:8px;border-radius:10px;font-size:14px; font-style:normal;">📥</i>
+            </div>
+          </div>
+          <button onclick="toast('동그라미 상점가 패키지를 전국 지자체망으로 전송합니다.')" style="margin-top:12px;width:100%;background:#f5f3ff;color:#7c3aed;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:2px solid #ddd6fe;cursor:pointer">
+            <i style="margin-right:6px; font-style:normal;">🔗</i>신규 패키지 타 지자체 전송
+          </button>
+        </div>
+
+        <div class="card" style="margin-bottom:4px">
+          <div class="card-title"><i style="font-style:normal;">🧮</i>공모 가점 자동 정산 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">170 모듈</span></div>
+          <div class="score-row"><span class="label">행안부 디지털 트윈 공모</span><span class="val">+3점</span></div>
+          <div class="score-row"><span class="label">중기부 스마트 상점가</span><span class="val">+5점</span></div>
+          <div class="score-row"><span class="label">국토부 스마트시티</span><span class="val">+2점</span></div>
+          <div class="score-row"><span class="label">온누리 상품권 페이백</span><span class="val">15% 적용</span></div>
+          <div class="score-total">
+            <div><div class="t-label">총 행정 가점</div><div class="t-val">+10점</div></div>
+            <div style="text-align:right"><div class="t-label">페이백 배정</div><div class="t-val">15%</div></div>
+          </div>
+          <button onclick="toast('행안부·중기부·국토부 시스템으로 가점 파라미터 전송 완료')" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:none;cursor:pointer">
+            <i style="margin-right:6px; font-style:normal;">🚀</i>중앙부처 공모 시스템 연동 전송
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard',this)">
+        <i style="font-style:normal;">📈</i>정산/성과
+      </div>
+      <div class="nav-item" id="nav-platform" onclick="switchTab('platform',this)">
+        <i style="font-style:normal;">🗄️</i>플랫폼
+      </div>
+      <div class="nav-item" id="nav-ai" onclick="switchTab('ai',this)">
+        <i style="font-style:normal;">🤖</i>AI분석
+      </div>
+      <div class="nav-item" id="nav-data" onclick="switchTab('data',this)">
+        <i style="font-style:normal;">🛡️</i>검증/투표
+      </div>
+      <div class="nav-item" id="nav-benchmarking" onclick="switchTab('benchmarking',this)">
+        <i style="font-style:normal;">📖</i>벤치마킹
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-wrap"></div>
+
+  <div id="bs-overlay" onclick="closeBS()"></div>
+  <div id="bottom-sheet">
+    <div style="width:40px;height:4px;background:#e5e7eb;border-radius:4px;margin:0 auto 20px"></div>
+    <div style="font-size:15px;font-weight:800;color:#1f2937;margin-bottom:16px"><i style="color:#7c3aed;margin-right:8px; font-style:normal;">💮</i>전자결재 상태</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;padding:10px 14px;background:#f5f3ff;border-radius:10px">
+        <span style="font-size:12px;color:#6b7280">결재 상태</span>
+        <span style="font-size:12px;font-weight:700;color:#7c3aed">승인 완료 · 홍석기 센터장</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:10px 14px;background:#f5f3ff;border-radius:10px">
+        <span style="font-size:12px;color:#6b7280">결재 일시</span>
+        <span style="font-size:12px;font-weight:700;color:#374151">2026.06.18</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:10px 14px;background:#fef2f2;border-radius:10px">
+        <span style="font-size:12px;color:#6b7280">무결성 락</span>
+        <span style="font-size:12px;font-weight:700;color:#ef4444"><i style="margin-right:4px; font-style:normal;">🔒</i>활성화됨</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:10px 14px;background:#f5f3ff;border-radius:10px">
+        <span style="font-size:12px;color:#6b7280">보안 등급</span>
+        <span style="font-size:12px;font-weight:700;color:#7c3aed">L2 · 행정 심사 보안 영역</span>
+      </div>
+    </div>
+    <button onclick="closeBS()" style="margin-top:20px;width:100%;background:#f5f3ff;color:#7c3aed;font-weight:700;padding:14px;border-radius:14px;border:none;cursor:pointer;font-size:14px">닫기</button>
+  </div>
+</div>
+
+<script>
+  // ── 로그인 ──
+  function doLogin() {
+    const el = document.getElementById('view-login');
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.style.display = 'none';
+      document.getElementById('main-app').style.display = 'flex';
+      initChart();
+      toast('홍석기 센터장님, 시스템 로그인이 완료되었습니다.');
+    }, 500);
+  }
+
+  // ── 탭 전환 ──
+  function switchTab(id, el) {
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── 토스트 ──
+  function toast(msg) {
+    const wrap = document.getElementById('toast-wrap');
+    const div = document.createElement('div');
+    div.className = 'toast-msg';
+    div.textContent = msg;
+    wrap.appendChild(div);
+    setTimeout(() => div.remove(), 2600);
+  }
+
+  // ── 플랫폼 토글 ──
+  function togglePlatform() {
+    const isPublic = document.getElementById('platform-toggle').checked;
+    document.getElementById('platform-title').textContent = isPublic ? '공공 전용 영상 DB (보안)' : '외부 API 연동 (유튜브)';
+    document.getElementById('public-view').style.display = isPublic ? 'block' : 'none';
+    document.getElementById('youtube-view').style.display = isPublic ? 'none' : 'block';
+    toast(isPublic ? '공공 전용 보안망으로 스위칭 되었습니다.' : '외부 유튜브 API 연동 모드로 전환되었습니다.');
+  }
+
+  // ── M3 업로드 ──
+  function uploadM3() {
+    if (confirm('행정 무결성 락(Lock)이 적용되어 저장됩니다.\n업로드하시겠습니까?')) {
+      toast('M3 최종 결과 영상이 국가 공공 저장소(112)에 락킹 저장되었습니다.');
+    }
+  }
+
+  // ── 바텀시트 ──
+  function openBS() {
+    document.getElementById('bs-overlay').classList.add('open');
+    document.getElementById('bottom-sheet').classList.add('open');
+  }
+  function closeBS() {
+    document.getElementById('bs-overlay').classList.remove('open');
+    document.getElementById('bottom-sheet').classList.remove('open');
+  }
+
+  // ── AI 분석 데이터 ──
+  const shopDB = {
+    semo: {
+      title:'세모세모 카페 분석', score:'98%', width:'98%',
+      before:'https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=500&q=80',
+      after:'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500&q=80',
+      prescription: false, totalScore: '78점 / 100점'
+    },
+    nemo: {
+      title:'네모 베이커리 분석', score:'85%', width:'85%',
+      before:'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80',
+      after:'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=500&q=80',
+      prescription: false, totalScore: '71점 / 100점'
+    },
+    star: {
+      title:'별빛 식당 분석', score:'41%', width:'41%',
+      before:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80',
+      after:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=500&q=80',
+      prescription: true, totalScore: '44점 / 100점'
+    }
+  };
+  const prescriptions = [
+    '⚠️ 주민 평가 점수: 성공 모델 대비 <b style="color:#ef4444">-30%</b> 부족',
+    '⚠️ 상인회 영상 업로드 참여율: 기준치(70%) 미달 <b style="color:#ef4444">(현재 38%)</b>',
+    '⚠️ 기지국 유동인구 체류시간: 평균 <b style="color:#ef4444">18분</b> (기준 35분 미달)'
+  ];
+
+  function changeShop(key, btn) {
+    document.querySelectorAll('.shop-btn').forEach(b => {
+      b.style.background = '#fff'; b.style.color = '#6b7280';
+      b.style.border = '2px solid #e5e7eb';
+    });
+    btn.style.background = '#7c3aed'; btn.style.color = '#fff'; btn.style.border = 'none';
+    const d = shopDB[key];
+    document.getElementById('ai-shop-title').textContent = d.title;
+    document.getElementById('ai-score').textContent = d.score;
+    document.getElementById('ai-bar').style.width = d.width;
+    document.getElementById('ai-img-before').src = d.before;
+    document.getElementById('ai-img-after').src = d.after;
+    document.getElementById('total-score').textContent = d.totalScore;
+    document.getElementById('slider-range').value = 50;
+    document.getElementById('slider-before').style.width = '50%';
+
+    const pc = document.getElementById('prescription-card');
+    const gc = document.getElementById('good-card');
+    if (d.prescription) {
+      pc.style.display = 'block'; gc.style.display = 'none';
+      document.getElementById('prescription-list').innerHTML =
+        prescriptions.map(p => `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;font-size:12px;color:#374151">${p}</div>`).join('');
+    } else {
+      pc.style.display = 'none'; gc.style.display = 'block';
+    }
+    toast(`${d.title}의 시계열 분석 데이터를 불러왔습니다.`);
+  }
+
+  // ── GPS 시뮬레이션 ──
+  function simGPS(g) {
+    const log = document.getElementById('gps-log');
+    const t = new Date(); const ts = `${t.getHours()}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+    let html = '';
+    if (g === 1) html = `<span style="color:#a78bfa">[${ts}] 제1집단(상인) 요청 수신</span><br><span style="color:#34d399">→ 최고 가중치 적용. 반경 5km 원격 평가 승인.</span>`;
+    else if (g === 2) html = `<span style="color:#fbbf24">[${ts}] 제2집단(거주민) 요청 수신</span><br><span style="color:#f87171">→ 지오펜스 불일치. 투표 권한 차단됨.</span>`;
+    else html = `<span style="color:#d1d5db">[${ts}] 제3집단(방문객) 요청 수신</span><br><span style="color:#34d399">→ 지오펜스 진입 확인. 일반 가중치 투표 활성화.</span>`;
+    const p = document.createElement('p');
+    p.innerHTML = html;
+    log.appendChild(p);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // ── 투표 체크 ──
+  let selectedVotes = new Set();
+  function toggleVote(el, name) {
+    el.classList.toggle('checked');
+    if (el.classList.contains('checked')) {
+      el.querySelector('.vote-check').textContent = '✓';
+      selectedVotes.add(name);
+    } else {
+      el.querySelector('.vote-check').textContent = '';
+      selectedVotes.delete(name);
+    }
+    document.getElementById('vote-count').textContent = `현재 ${selectedVotes.size}개 선택됨`;
+  }
+  function submitVote() {
+    if (selectedVotes.size < 2) {
+      toast('❌ 최소 2개 이상 교차 선택 필요. 단일 몰표 차단.');
+    } else {
+      toast(`✅ ${selectedVotes.size}개 교차 선택 확인. 투표 데이터 서버 전송 완료.`);
+    }
+  }
+
+  // ── Chart.js 유동인구 ──
+  function initChart() {
+    const ctx = document.getElementById('popChart').getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 130);
+    grad.addColorStop(0, 'rgba(124,58,237,0.3)');
+    grad.addColorStop(1, 'rgba(124,58,237,0)');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['08','09','10','11','12','13','14','15','16','17','18','19','20','21'],
+        datasets: [{
+          data: [120,340,520,680,890,1240,1580,1320,980,760,540,380,210,150],
+          borderColor: '#7c3aed',
+          backgroundColor: grad,
+          borderWidth: 2.5,
+          pointBackgroundColor: '#7c3aed',
+          pointRadius: 3,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9ca3af' } },
+          y: { grid: { color: '#f3f4f6' }, ticks: { font: { size: 10 }, color: '#9ca3af' } }
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>
