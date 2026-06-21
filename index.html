@@ -205,7 +205,7 @@
       box-shadow: 0 6px 24px rgba(124,58,237,0.35);
       transition: background 0.4s ease;
     }
-    .hero-card .score { font-size:42px; font-weight:800; line-height:1; margin-top:6px; }
+    .hero-card .score { font-size:42px; font-weight:800; line-height:1; }
     .hero-card .score span { font-size:16px; font-weight:400; color:#c4b5fd; margin-left:4px; }
 
     /* ── 섹션 뷰 ── */
@@ -225,7 +225,7 @@
     }
     .terminal p { margin-bottom: 4px; line-height: 1.5; }
 
-    /* ── Before/After 슬라이더 (완벽 비율 수정본) ── */
+    /* ── Before/After 슬라이더 ── */
     #slider-container {
       width:100%; height:200px;
       border-radius:14px; overflow:hidden;
@@ -237,7 +237,7 @@
     }
     #slider-before {
       position:absolute; top:0; left:0; width:100%; height:100%;
-      clip-path: inset(0 50% 0 0); /* 오른쪽을 50% 잘라냄 */
+      clip-path: inset(0 50% 0 0);
       z-index:2; pointer-events:none;
     }
     .slider-line {
@@ -319,7 +319,10 @@
     .h-card {
       min-width:160px; background:#fff; border-radius:16px;
       padding:14px 16px; box-shadow:0 2px 10px rgba(124,58,237,0.1);
-      border:1px solid #ede9fe; flex-shrink:0;
+      border:2px solid #ede9fe; flex-shrink:0; transition: all 0.2s; cursor: pointer;
+    }
+    .h-card.active-card {
+      border-color: #7c3aed; background: #faf5ff;
     }
 
     /* ── 테이블 ── */
@@ -412,30 +415,30 @@
 
       <div id="tab-dashboard" class="view-section active">
 
-        <div class="hero-card" id="dashboard-hero">
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">
-            <div style="font-size: 11px; color: #c4b5fd;">[시설 개선 + 유동인구 증가 + 상인회 활동도 합산]</div>
-            <div style="font-size: 11px; color: #a78bfa;" id="dashboard-trend"><i style="color:#34d399; font-style:normal;">⬆️</i> 전월 대비 4.2% 상승</div>
+        <div class="hero-card" id="dashboard-hero" style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="flex:1; padding-right:10px;">
+            <div style="font-size: 11px; color: #c4b5fd; margin-bottom:6px; word-break:keep-all; line-height:1.3;">[시설 개선 + 유동인구 증가 + 상인회 활동도 합산]</div>
+            <div style="font-size: 11px; color: #a78bfa;" id="dashboard-trend"><i style="color:#34d399; font-style:normal;">⬆️</i> 전월 대비 상승</div>
           </div>
-          <div class="score" id="dashboard-score">92<span>점</span></div>
+          <div class="score" id="dashboard-score" style="margin-top:0; flex-shrink:0;">92<span>점</span></div>
         </div>
 
         <div class="card">
           <div class="card-title"><i style="font-style:normal;">🧠</i>AI 성공 가능성 예측 현황 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">117 모듈</span></div>
           <div class="hscroll">
-            <div class="h-card" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
+            <div class="h-card active-card" id="hcard-shop1" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
               <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">봉천동 먹자골목 1번가 상인회</div>
               <div style="font-size:26px;font-weight:800;color:#7c3aed">92%</div>
               <div class="prog-wrap" style="margin:6px 0"><div class="prog-bar" style="width:92%"></div></div>
               <span class="badge green">우수</span>
             </div>
-            <div class="h-card" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
+            <div class="h-card" id="hcard-shop3" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
               <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">일곡동 골목형 상점가</div>
               <div style="font-size:26px;font-weight:800;color:#f97316">95%</div>
               <div class="prog-wrap" style="margin:6px 0"><div class="prog-bar" style="width:95%; background: linear-gradient(90deg,#10b981,#34d399);"></div></div>
               <span class="badge green">우수</span>
             </div>
-            <div class="h-card" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
+            <div class="h-card" id="hcard-shop2" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
               <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">화개 상인회</div>
               <div style="font-size:26px;font-weight:800;color:#ef4444">44%</div>
               <div class="prog-wrap" style="margin:6px 0"><div class="prog-bar red" style="width:44%"></div></div>
@@ -462,20 +465,8 @@
 
         <div class="card">
           <div class="card-title"><i style="font-style:normal;">🕒</i><span id="incentive-title">누적 인센티브 및 감점 정산 기록</span> <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">총 128건</span></div>
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
-              <div><div style="font-size:13px;font-weight:700;color:#1f2937">온누리 페이백 15% 승인</div><div style="font-size:10px;color:#9ca3af">2026.06.18 기록분</div></div>
-              <span class="badge green">완료</span>
+          <div style="display:flex;flex-direction:column;gap:8px" id="incentive-list">
             </div>
-            <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
-              <div><div style="font-size:13px;font-weight:700;color:#1f2937">중기부 공모 가점 +5점</div><div style="font-size:10px;color:#9ca3af">2026.06.15 기록분</div></div>
-              <span class="badge purple">적용</span>
-            </div>
-            <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
-              <div><div style="font-size:13px;font-weight:700;color:#1f2937">주민평가 미달 패널티 적용</div><div style="font-size:10px;color:#9ca3af">2026.06.10 기록분</div></div>
-              <span class="badge red">감점</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -492,71 +483,11 @@
         <div id="public-view">
           <div style="font-size:11px;color:#9ca3af;font-weight:700;padding:10px 14px 4px">총 842건 · 무결성 검증 완료</div>
 
-          <div class="card" onclick="openBS()" style="cursor:pointer">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:70px; height:50px; background:#ddd; border-radius:8px; overflow:hidden; flex-shrink:0; position:relative;">
-                <img src="shop1_after.jpg" style="width:100%; height:100%; object-fit:cover;">
-                <div style="position:absolute; inset:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;"><i style="color:#fff; font-size:16px;" class="fas fa-play"></i></div>
-              </div>
-              <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_shop1_signboard.mp4</div>
-                <div style="font-size:10px;color:#9ca3af">봉천동 먹자골목 1번가 상인회 · 15MB</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <span class="badge red">보안</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" onclick="openBS()" style="cursor:pointer">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:70px; height:50px; background:#ddd; border-radius:8px; overflow:hidden; flex-shrink:0; position:relative;">
-                <img src="shop2_after.png" style="width:100%; height:100%; object-fit:cover;">
-                <div style="position:absolute; inset:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;"><i style="color:#fff; font-size:16px;" class="fas fa-play"></i></div>
-              </div>
-              <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:#1f2937">vid_shop2_street.mp4</div>
-                <div style="font-size:10px;color:#9ca3af">화개 상인회 · 28MB</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <span class="badge green">공개</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" onclick="toast('현재 행정 검토 중인 데이터입니다.')" style="cursor:pointer">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div style="width:70px; height:50px; background:#ddd; border-radius:8px; overflow:hidden; flex-shrink:0; position:relative;">
-                <img src="shop3_after.png" style="width:100%; height:100%; object-fit:cover;">
-                <div style="position:absolute; inset:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;"><i style="color:#fff; font-size:16px;" class="fas fa-image"></i></div>
-              </div>
-              <div style="flex:1">
-                <div style="font-size:13px;font-weight:700;color:#1f2937">img_shop3_pub.png</div>
-                <div style="font-size:10px;color:#9ca3af">일곡동 골목형 상점가 · 4.2MB</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                <span class="badge orange">검토중</span>
-              </div>
-            </div>
-          </div>
+          <div id="public-view-files"></div>
 
           <div class="card">
             <div class="card-title"><i style="font-style:normal;">📤</i>마일스톤 영상 업로드 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">141 모듈</span></div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">
-                <img src="shop1_before.jpg" style="width:40px; height:30px; object-fit:cover; border-radius:4px;">
-                <div><div style="font-size:12px;font-weight:700;color:#065f46">M1 초기 단계 (정비 전)</div><div style="font-size:10px;color:#6b7280">업로드 완료 · 2026.04.01</div></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0">
-                <img src="shop2_before.png" style="width:40px; height:30px; object-fit:cover; border-radius:4px;">
-                <div><div style="font-size:12px;font-weight:700;color:#065f46">M2 중간 점검 (공사 중)</div><div style="font-size:10px;color:#6b7280">업로드 완료 · 2026.05.20</div></div>
-              </div>
-              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#faf5ff;border-radius:12px;border:2px dashed #c4b5fd;cursor:pointer" onclick="uploadM3()">
-                <div style="width:40px; height:30px; background:#e5e7eb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#9ca3af;"><i class="fas fa-camera"></i></div>
-                <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#7c3aed">M3 최종 결과 (완성)</div><div style="font-size:10px;color:#9ca3af">업로드 대기 중</div></div>
-                <i style="color:#c4b5fd;font-size:12px; font-style:normal;">▶️</i>
-              </div>
-            </div>
+            <div style="display:flex;flex-direction:column;gap:8px" id="public-view-milestones"></div>
           </div>
         </div>
 
@@ -567,13 +498,13 @@
           </div>
 
           <div class="card">
-            <video src="video1.mp4" poster="thumb_video1.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+            <video src="video1.mp4" poster="https://placehold.co/400x200/111/fff?text=thumb_video1.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
             <div style="font-size:13px;font-weight:700;color:#1f2937">봉천동 먹자골목 1번가 상인회 간판 정비 성공 사례</div>
             <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 1.2만회 · 2일 전</div>
           </div>
 
           <div class="card">
-            <video src="video2.mp4" poster="thumb_video2.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+            <video src="video2.mp4" poster="https://placehold.co/400x200/111/fff?text=thumb_video2.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
             <div style="font-size:13px;font-weight:700;color:#1f2937">일곡동 골목형 상점가 야외 펍 축제 성공 사례</div>
             <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 2.5만회 · 1일 전</div>
           </div>
@@ -679,34 +610,16 @@
       </div>
 
       <div id="tab-benchmarking" class="view-section">
-        <div class="hero-card" style="position:relative;overflow:hidden" onclick="toast('일곡동 골목형 상점가 교과서 데이터 패키징 완료!')">
+        
+        <div class="hero-card" style="position:relative;overflow:hidden" onclick="toast('선도 상권 모델 데이터를 확인합니다.')">
           <i style="position:absolute;bottom:-10px;right:-10px;font-size:80px;opacity:0.15; font-style:normal;">👑</i>
-          <span class="badge" style="background:#fef08a;color:#713f12;margin-bottom:8px;display:inline-block">2026 선도 상권 모델</span>
-          <div style="font-size:24px;font-weight:800;margin-bottom:4px">일곡동 골목형 상점가</div>
-          <div style="font-size:12px;color:#c4b5fd">표준 임계치 달성 · 벤치마킹 데이터 패키징 완료</div>
+          <span class="badge" style="background:#fef08a;color:#713f12;margin-bottom:8px;display:inline-block">2026 벤치마킹 타겟</span>
+          <div style="font-size:24px;font-weight:800;margin-bottom:4px" id="bm-hero-title">로딩중...</div>
+          <div style="font-size:12px;color:#c4b5fd" id="bm-hero-sub">로딩중...</div>
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🏆</i>선도 상권 성과 지표</div>
-          <div class="data-row">
-            <span class="data-label">최종 성공 확률</span>
-            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:95%"></div></div></div>
-            <span class="data-val">95%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">유동인구 증가</span>
-            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:98%"></div></div></div>
-            <span class="data-val">+98%</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">상인회 활동도</span>
-            <div class="data-bar-wrap"><div class="prog-wrap"><div class="prog-bar" style="width:96%"></div></div></div>
-            <span class="data-val">96점</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🛣️</i>별빛 전통시장 개선 로드맵 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">처방 지표 기반</span></div>
+          <div class="card-title"><i style="font-style:normal;">🛣️</i><span id="bm-roadmap-title">개선 로드맵</span> <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">처방 지표 기반</span></div>
           <div style="padding-left:4px">
             <div class="timeline-step">
               <div class="step-icon done">✓</div>
@@ -729,7 +642,7 @@
             </div>
             <div class="timeline-step">
               <div class="step-icon wait">4</div>
-              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 4 대기</div><div style="font-size:11px;color:#9ca3af">기지국 유동인구 35분 체류 달성 필요</div></div>
+              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 4 대기</div><div style="font-size:11px;color:#9ca3af">기지국 유동인구 기준치 달성 필요</div></div>
             </div>
             <div class="timeline-step" style="margin-bottom:0">
               <div class="step-icon wait">5</div>
@@ -737,7 +650,7 @@
             </div>
           </div>
           <div style="margin-top:14px;background:#f0fdf4;border-radius:12px;padding:10px 14px;font-size:12px;color:#065f46;font-weight:700">
-            🎯 목표 달성 시 예상 성공 확률: <span style="font-size:16px;color:#10b981">71%</span> (기준치 70% 초과 예상)
+            🎯 목표 달성 시 예상 성공 확률: <span style="font-size:16px;color:#10b981" id="bm-expected-prob">0%</span>
           </div>
         </div>
 
@@ -753,24 +666,15 @@
               <i style="color:#7c3aed;background:#f5f3ff;padding:8px;border-radius:10px;font-size:14px; font-style:normal;">📥</i>
             </div>
           </div>
-          <button onclick="toast('일곡동 골목형 상점가 패키지를 전국 지자체망으로 전송합니다.')" style="margin-top:12px;width:100%;background:#f5f3ff;color:#7c3aed;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:2px solid #ddd6fe;cursor:pointer">
+          <button onclick="toast('신규 벤치마킹 패키지를 전국 지자체망으로 전송합니다.')" style="margin-top:12px;width:100%;background:#f5f3ff;color:#7c3aed;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:2px solid #ddd6fe;cursor:pointer">
             <i style="margin-right:6px; font-style:normal;">🔗</i>신규 패키지 타 지자체 전송
           </button>
         </div>
 
         <div class="card" style="margin-bottom:4px">
           <div class="card-title"><i style="font-style:normal;">🧮</i>공모 가점 자동 정산 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">170 모듈</span></div>
-          <div class="score-row"><span class="label">행안부 디지털 트윈 공모</span><span class="val">+3점</span></div>
-          <div class="score-row"><span class="label">중기부 스마트 상점가</span><span class="val">+5점</span></div>
-          <div class="score-row"><span class="label">국토부 스마트시티</span><span class="val">+2점</span></div>
-          <div class="score-row"><span class="label">온누리 상품권 페이백</span><span class="val">15% 적용</span></div>
-          <div class="score-total">
-            <div><div class="t-label">총 행정 가점</div><div class="t-val">+10점</div></div>
-            <div style="text-align:right"><div class="t-label">페이백 배정</div><div class="t-val">15%</div></div>
-          </div>
-          <button onclick="toast('행안부·중기부·국토부 시스템으로 가점 파라미터 전송 완료')" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:none;cursor:pointer">
-            <i style="margin-right:6px; font-style:normal;">🚀</i>중앙부처 공모 시스템 연동 전송
-          </button>
+          <div id="bm-score-container">
+            </div>
         </div>
 
       </div>
@@ -826,12 +730,12 @@
 <script>
   let popChartInstance = null;
 
-  // ── 1. 데이터 세팅 (로컬 파일명 명시, 상인회 주어 적용) ──
+  // ── 1. 데이터 세팅 (인센티브, 플랫폼, 벤치마킹 추가 및 이미지 placehold.co 연동) ──
   const shopData = {
     shop1: {
       title: "봉천동 먹자골목 1번가 상인회",
-      beforeImg: "shop1_before.jpg",
-      afterImg: "shop1_after.jpg",
+      beforeImg: "https://placehold.co/600x400/e2e8f0/475569?text=shop1_before.jpg",
+      afterImg: "https://placehold.co/600x400/4c1d95/fff?text=shop1_after.jpg",
       textBefore: "어디에 눈길을 둬야 될지 모를 정도로 난잡했던 옛날 간판들",
       textAfter: "정부 지원을 통해 각 상점의 특색을 살린 간판으로 전면 교체",
       score: 92,
@@ -846,12 +750,36 @@
         { label: "디자인 통일성", val: 88 },
         { label: "상권 조화도", val: 90 },
         { label: "야간 경관 효과", val: 94 }
-      ]
+      ],
+      incentives: [
+        { title: "온누리 페이백 15% 승인", date: "2026.06.18 기록분", badge: "완료", badgeClass: "green" },
+        { title: "중기부 공모 가점 +5점", date: "2026.06.15 기록분", badge: "적용", badgeClass: "purple" },
+        { title: "우수 상인회 구청장 표창", date: "2026.05.20 기록분", badge: "포상", badgeClass: "green" }
+      ],
+      files: [
+        { name: "vid_shop1_signboard.mp4", desc: "봉천동 먹자골목 1번가 상인회 · 15MB", img: "https://placehold.co/140x100/333/fff?text=vid_shop1.mp4", icon: "fa-play", badge: "보안", badgeClass: "red" },
+        { name: "img_shop1_before.png", desc: "초기 실태 조사 보고서 · 3.2MB", img: "https://placehold.co/140x100/ddd/555?text=img_shop1.png", icon: "fa-image", badge: "공개", badgeClass: "green" }
+      ],
+      milestones: [
+        { name: "M1 초기 단계 (정비 전)", date: "2026.04.01", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M1_shop1.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M2 중간 점검 (공사 중)", date: "2026.05.20", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M2_shop1.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" }
+      ],
+      benchmarking: {
+        heroTitle: "봉천동 상권 벤치마킹",
+        heroSub: "우수 간판 정비 사례 · 데이터 패키징 진행 중",
+        expectedProb: "96%",
+        scores: [
+          { label: "행안부 디지털 트윈 공모", val: "+3점" },
+          { label: "중기부 스마트 상점가", val: "+5점" }
+        ],
+        totalScore: "+8점",
+        payback: "15%"
+      }
     },
     shop2: {
       title: "화개 상인회",
-      beforeImg: "shop2_before.png",
-      afterImg: "shop2_after.png",
+      beforeImg: "https://placehold.co/600x400/e2e8f0/475569?text=shop2_before.png",
+      afterImg: "https://placehold.co/600x400/b91c1c/fff?text=shop2_after.png",
       textBefore: "보행이 불편하고 노후화되어 정비가 필요했던 기존 골목길",
       textAfter: "획일적인 포장만 진행되어 상권 활성화로 이어지지 못한 한산한 거리",
       score: 44, 
@@ -871,12 +799,33 @@
         "• 주민 평가 점수: 성공 모델 대비 -30% 부족",
         "• 상인회 참여율: 기준치 미달 (현재 38%)",
         "• 체류 시간: 기준 35분 미달 (현재 18분)"
-      ]
+      ],
+      incentives: [
+        { title: "예산 집행 지연 경고", date: "2026.06.18 기록분", badge: "경고", badgeClass: "orange" },
+        { title: "주민평가 미달 패널티 적용", date: "2026.06.10 기록분", badge: "감점", badgeClass: "red" }
+      ],
+      files: [
+        { name: "vid_shop2_street.mp4", desc: "화개 상인회 · 28MB", img: "https://placehold.co/140x100/333/fff?text=vid_shop2.mp4", icon: "fa-play", badge: "공개", badgeClass: "green" }
+      ],
+      milestones: [
+        { name: "M1 초기 단계 (정비 전)", date: "2026.04.15", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M1_shop2.png", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M2 중간 점검 (공사 중)", date: "-", status: "업로드 지연됨", img: "https://placehold.co/80x60/fee2e2/991b1b?text=지연", color: "#991b1b", bg: "#fef2f2", border: "#fecaca" }
+      ],
+      benchmarking: {
+        heroTitle: "화개 상인회 개선 필요",
+        heroSub: "기준치 미달 · 긴급 처방 데이터 벤치마킹 필요",
+        expectedProb: "48%",
+        scores: [
+          { label: "국토부 스마트시티 (보류)", val: "0점" }
+        ],
+        totalScore: "0점",
+        payback: "0%"
+      }
     },
     shop3: {
       title: "일곡동 골목형 상점가",
-      beforeImg: "shop3_before.jpg",
-      afterImg: "shop3_after.png",
+      beforeImg: "https://placehold.co/600x400/e2e8f0/475569?text=shop3_before.jpg",
+      afterImg: "https://placehold.co/600x400/4c1d95/fff?text=shop3_after.png",
       textBefore: "사람들도 잘 안 지나다니고 어두웠던 일반적인 저녁 상점가",
       textAfter: "차 없는 거리를 조성하고 야외 테이블을 내놓아 유럽 펍 축제로 전환",
       score: 95,
@@ -891,7 +840,34 @@
         { label: "체류 시간 증가", val: 92 },
         { label: "야간 명소화", val: 89 },
         { label: "상인 만족도", val: 96 }
-      ]
+      ],
+      incentives: [
+        { title: "유럽 펍 축제 특별 예산 배정", date: "2026.06.19 기록분", badge: "승인", badgeClass: "purple" },
+        { title: "온누리 페이백 15% 승인", date: "2026.06.18 기록분", badge: "완료", badgeClass: "green" },
+        { title: "국토부 스마트시티 가점", date: "2026.06.12 기록분", badge: "적용", badgeClass: "purple" }
+      ],
+      files: [
+        { name: "img_shop3_pub.png", desc: "일곡동 골목형 상점가 · 4.2MB", img: "https://placehold.co/140x100/ddd/555?text=img_shop3.png", icon: "fa-image", badge: "검토중", badgeClass: "orange" },
+        { name: "vid_shop3_festival.mp4", desc: "축제 현장 스케치 · 45MB", img: "https://placehold.co/140x100/333/fff?text=vid_shop3.mp4", icon: "fa-play", badge: "보안", badgeClass: "red" }
+      ],
+      milestones: [
+        { name: "M1 초기 단계 (정비 전)", date: "2026.03.10", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M1_shop3.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M2 중간 점검 (공사 중)", date: "2026.04.25", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M2_shop3.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M3 최종 결과 (완성)", date: "2026.06.01", status: "행정 검증 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M3_shop3.png", color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe" }
+      ],
+      benchmarking: {
+        heroTitle: "일곡동 골목형 상점가",
+        heroSub: "2026 선도 상권 모델 · 벤치마킹 데이터 패키징 완료",
+        expectedProb: "98%",
+        scores: [
+          { label: "행안부 디지털 트윈 공모", val: "+3점" },
+          { label: "중기부 스마트 상점가", val: "+5점" },
+          { label: "국토부 스마트시티", val: "+2점" },
+          { label: "온누리 상품권 페이백", val: "15% 적용" }
+        ],
+        totalScore: "+10점",
+        payback: "15%"
+      }
     }
   };
 
@@ -953,11 +929,11 @@
     document.getElementById('slider-handle').style.left = val + '%';
   }
 
-  // ── 3. 동적 상권 데이터 바인딩 (주어 통일) ──
+  // ── 3. 동적 상권 데이터 바인딩 ──
   function changeShop(id, btn) {
     const data = shopData[id];
     
-    // 글로벌 선택 버튼 스타일 업데이트
+    // 글로벌 버튼 스타일 업데이트
     if(btn) {
       document.querySelectorAll('.shop-btn').forEach(b => {
         b.style.background = '#fff'; b.style.color = '#6b7280'; b.style.border = '2px solid #e5e7eb';
@@ -965,7 +941,12 @@
       btn.style.background = '#7c3aed'; btn.style.color = '#fff'; btn.style.border = 'none';
     }
 
-    // 대시보드 텍스트 및 점수 업데이트 (주어 명시 및 동적 변화)
+    // ⑥ AI 성공 예측 활성화 카드 스타일 업데이트
+    document.querySelectorAll('.h-card').forEach(el => el.classList.remove('active-card'));
+    const hcard = document.getElementById('hcard-' + id);
+    if(hcard) hcard.classList.add('active-card');
+
+    // 대시보드 업데이트
     document.getElementById('dashboard-score').innerHTML = data.score + "<span>점</span>";
     document.getElementById('dashboard-trend').innerHTML = data.trend;
     document.getElementById('dashboard-hero').style.background = data.heroBg;
@@ -980,14 +961,57 @@
 
     document.getElementById('incentive-title').innerText = `[${data.title}] 누적 인센티브 및 감점 정산 기록`;
 
-    // AI 분석 텍스트 업데이트 (주어 명시)
+    // ① 인센티브 리스트 동적 렌더링
+    document.getElementById('incentive-list').innerHTML = data.incentives.map(inc => `
+      <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
+        <div><div style="font-size:13px;font-weight:700;color:#1f2937">${inc.title}</div><div style="font-size:10px;color:#9ca3af">${inc.date}</div></div>
+        <span class="badge ${inc.badgeClass}">${inc.badge}</span>
+      </div>
+    `).join('');
+
+    // ② 플랫폼 파일 목록 및 마일스톤 동적 렌더링
+    document.getElementById('public-view-files').innerHTML = data.files.map(f => `
+      <div class="card" onclick="openBS()" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:70px; height:50px; background:#ddd; border-radius:8px; overflow:hidden; flex-shrink:0; position:relative;">
+            <img src="${f.img}" style="width:100%; height:100%; object-fit:cover;">
+            <div style="position:absolute; inset:0; background:rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;"><i style="color:#fff; font-size:16px;" class="fas ${f.icon}"></i></div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#1f2937">${f.name}</div>
+            <div style="font-size:10px;color:#9ca3af">${f.desc}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <span class="badge ${f.badgeClass}">${f.badge}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    let msHtml = data.milestones.map(m => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:${m.bg};border-radius:12px;border:1px solid ${m.border}">
+        <img src="${m.img}" style="width:40px; height:30px; object-fit:cover; border-radius:4px;">
+        <div><div style="font-size:12px;font-weight:700;color:${m.color}">${m.name}</div><div style="font-size:10px;color:#6b7280">${m.status} · ${m.date}</div></div>
+      </div>
+    `).join('');
+
+    if(data.title !== "일곡동 골목형 상점가") {
+       msHtml += `
+       <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#faf5ff;border-radius:12px;border:2px dashed #c4b5fd;cursor:pointer" onclick="uploadM3()">
+         <div style="width:40px; height:30px; background:#e5e7eb; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#9ca3af;"><i class="fas fa-camera"></i></div>
+         <div style="flex:1"><div style="font-size:12px;font-weight:700;color:#7c3aed">M3 최종 결과 (완성)</div><div style="font-size:10px;color:#9ca3af">업로드 대기 중</div></div>
+         <i style="color:#c4b5fd;font-size:12px; font-style:normal;">▶️</i>
+       </div>
+       `;
+    }
+    document.getElementById('public-view-milestones').innerHTML = msHtml;
+
+    // AI 분석 텍스트 및 이미지
     document.getElementById('ai-shop-title').innerText = `[${data.title}] 환경/간판 정비 분석`;
     document.getElementById('ai-env-title').innerText = `[${data.title}] 골목형 상점가 환경 변화도 상세 분석`;
-    
-    // 검증 탭 텍스트 업데이트 (주어 명시)
     document.getElementById('gps-verify-title').innerText = `[${data.title}] 투표 권한 GPS 실시간 검증`;
 
-    // 이미지 및 데이터 교체
+    // ④ 이미지 파일 이름 준수 & 깨짐 방지용 Placehold 맵핑 데이터 로드
     document.getElementById('ai-img-before').src = data.beforeImg;
     document.getElementById('ai-img-after').src = data.afterImg;
     document.getElementById('text-before').innerText = data.textBefore;
@@ -1029,6 +1053,26 @@
       val.style.color = "#fff";
       presc.style.display = "none";
     }
+
+    // ③ 벤치마킹 탭 로드맵, 모델, 스코어 동적 렌더링
+    document.getElementById('bm-roadmap-title').innerText = data.title + " 개선 로드맵";
+    document.getElementById('bm-hero-title').innerText = data.benchmarking.heroTitle;
+    document.getElementById('bm-hero-sub').innerText = data.benchmarking.heroSub;
+    document.getElementById('bm-expected-prob').innerText = data.benchmarking.expectedProb;
+
+    let scoreHtml = data.benchmarking.scores.map(s => `
+      <div class="score-row"><span class="label">${s.label}</span><span class="val">${s.val}</span></div>
+    `).join('');
+    scoreHtml += `
+      <div class="score-total">
+        <div><div class="t-label">총 행정 가점</div><div class="t-val">${data.benchmarking.totalScore}</div></div>
+        <div style="text-align:right"><div class="t-label">페이백 배정</div><div class="t-val">${data.benchmarking.payback}</div></div>
+      </div>
+      <button onclick="toast('행안부·중기부·국토부 시스템으로 가점 파라미터 전송 완료')" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:none;cursor:pointer">
+        <i style="margin-right:6px; font-style:normal;">🚀</i>중앙부처 공모 시스템 연동 전송
+      </button>
+    `;
+    document.getElementById('bm-score-container').innerHTML = scoreHtml;
 
     updateSlider(50);
     document.getElementById('slider-range').value = 50;
