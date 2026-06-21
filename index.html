@@ -142,7 +142,8 @@
     /* ── 토스트 ── */
     #toast-wrap {
       position: fixed;
-      bottom: 80px;
+      /* 화면 하단 메뉴 영역을 가리지 않도록 위로 더 띄움 */
+      bottom: 110px; 
       left: 50%;
       transform: translateX(-50%);
       z-index: 200;
@@ -151,13 +152,15 @@
       pointer-events: none;
     }
     .toast-msg {
-      background: #4c1d95;
+      /* 반투명 처리 및 뒷배경 블러 처리로 덜 걸리적거리게 수정 */
+      background: rgba(76, 29, 149, 0.85);
+      backdrop-filter: blur(4px);
       color: #fff;
       font-size: 12px; font-weight: 600;
       padding: 10px 20px;
       border-radius: 24px;
       white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
       animation: toastAnim 2.5s ease forwards;
     }
     @keyframes toastAnim {
@@ -178,7 +181,14 @@
     .card-title {
       font-size: 13px; font-weight: 700; color: #374151;
       margin-bottom: 12px;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: flex-start; /* 글씨 래핑 대비 정렬 수정 */
+      gap: 6px;
+      word-break: keep-all; /* 한국어 단어 중간에 끊기지 않도록 설정 */
+      line-height: 1.4;
+    }
+    .card-title i {
+      margin-top: 2px;
+      flex-shrink: 0;
     }
 
     /* ── 진행바 ── */
@@ -424,7 +434,7 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🧠</i>AI 성공 가능성 예측 현황 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">117 모듈</span></div>
+          <div class="card-title"><i style="font-style:normal;">🧠</i><span style="flex:1;">AI 성공 가능성 예측 현황</span></div>
           <div class="hscroll">
             <div class="h-card active-card" id="hcard-shop1" onclick="toast('AI탭에서 상세 진단 결과를 확인하세요')">
               <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">봉천동 먹자골목 1번가 상인회</div>
@@ -448,7 +458,10 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">📡</i><span id="pop-chart-title">기지국 유동인구 밀집도</span> <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">160·161 모듈</span></div>
+          <div class="card-title">
+            <i style="font-style:normal;">📡</i>
+            <span id="pop-chart-title" style="flex:1;">기지국 유동인구 밀집도</span>
+          </div>
           <div style="display:flex; gap:12px; align-items: stretch;">
             <div style="width:100px; background:#f3f0ff; border-radius:10px; border:1px solid #ede9fe; display:flex; align-items:center; justify-content:center; text-align:center; padding:10px; font-size:10px; color:#7c3aed; font-weight:700; flex-shrink:0;">
               [서구 전체 126개<br>골목형 상점가<br>모식도 연동]
@@ -464,7 +477,11 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🕒</i><span id="incentive-title">누적 인센티브 및 감점 정산 기록</span> <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">총 128건</span></div>
+          <div class="card-title">
+            <i style="font-style:normal;">🕒</i>
+            <span id="incentive-title" style="flex:1;">누적 인센티브 및 감점 정산 기록</span>
+            <span style="font-size:10px;color:#9ca3af;font-weight:400;white-space:nowrap;flex-shrink:0;margin-top:2px;">총 128건</span>
+          </div>
           <div style="display:flex;flex-direction:column;gap:8px" id="incentive-list">
             </div>
         </div>
@@ -486,7 +503,7 @@
           <div id="public-view-files"></div>
 
           <div class="card">
-            <div class="card-title"><i style="font-style:normal;">📤</i>마일스톤 영상 업로드 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">141 모듈</span></div>
+            <div class="card-title"><i style="font-style:normal;">📤</i><span style="flex:1;">마일스톤 영상 업로드</span></div>
             <div style="display:flex;flex-direction:column;gap:8px" id="public-view-milestones"></div>
           </div>
         </div>
@@ -515,7 +532,7 @@
         
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:10px;">
-            <div class="card-title" style="margin-bottom:0; word-break: keep-all; line-height:1.4; flex:1;"><i style="font-style:normal;">📷</i><span id="ai-shop-title">분석 로딩중...</span></div>
+            <div class="card-title" style="margin-bottom:0; flex:1;"><i style="font-style:normal;">📷</i><span id="ai-shop-title" style="flex:1;">분석 로딩중...</span></div>
             <span class="badge red" style="font-size:10px; flex-shrink:0; white-space:nowrap; margin-top:2px;"><i style="margin-right:3px; font-style:normal;">🔒</i>무결성 락</span>
           </div>
           
@@ -538,7 +555,7 @@
         </div>
 
         <div class="card">
-          <div class="card-title" style="word-break: keep-all; line-height:1.4;"><i style="font-style:normal;">📊</i><span id="ai-env-title">환경 변화도 상세 분석</span></div>
+          <div class="card-title"><i style="font-style:normal;">📊</i><span id="ai-env-title" style="flex:1;">환경 변화도 상세 분석</span></div>
           
           <div id="metrics-list"></div>
 
@@ -549,7 +566,7 @@
         </div>
 
         <div id="prescription-card" class="card" style="display:none; border:1px solid #fed7aa; background:#fffbeb;">
-          <div class="card-title" style="color:#92400e;"><i style="color:#f59e0b; font-style:normal;">⚠️</i>AI 취약점 처방 지표</div>
+          <div class="card-title" style="color:#92400e;"><i style="color:#f59e0b; font-style:normal;">⚠️</i><span style="flex:1;">AI 취약점 처방 지표</span></div>
           <div id="prescription-list" style="font-size:12px; color:#92400e; line-height:1.5;"></div>
           <button onclick="toast('선도 상권 벤치마킹 데이터를 요청합니다.')" style="margin-top:12px;width:100%;background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:13px;border-radius:14px;border:none;cursor:pointer">
             <i style="margin-right:6px; font-style:normal;">🚀</i>선도 상권 벤치마킹 데이터 요청
@@ -559,7 +576,7 @@
 
       <div id="tab-data" class="view-section">
         <div class="card">
-          <div class="card-title" style="word-break: keep-all; line-height:1.4;"><i style="font-style:normal;">📍</i><span id="gps-verify-title">투표 권한 GPS 실시간 검증</span> <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto; flex-shrink:0;">150 모듈</span></div>
+          <div class="card-title"><i style="font-style:normal;">📍</i><span id="gps-verify-title" style="flex:1;">투표 권한 GPS 실시간 검증</span></div>
           <div style="display:flex;gap:8px;margin-bottom:10px">
             <button onclick="simGPS(1)" style="flex:1;padding:9px 4px;background:#f5f3ff;border:1px solid #ddd6fe;color:#7c3aed;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">[1집단] 상인</button>
             <button onclick="simGPS(2)" style="flex:1;padding:9px 4px;background:#fffbeb;border:1px solid #fed7aa;color:#92400e;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer">[2집단] 거주민</button>
@@ -571,7 +588,11 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🛡️</i>실시간 투표 어뷰징 모니터링 <span style="font-size:10px;color:#10b981;font-weight:700;margin-left:auto">정상 1,420건</span></div>
+          <div class="card-title">
+            <i style="font-style:normal;">🛡️</i>
+            <span style="flex:1;">실시간 투표 어뷰징 모니터링</span>
+            <span style="font-size:10px;color:#10b981;font-weight:700;white-space:nowrap;flex-shrink:0;margin-top:2px;">정상 1,420건</span>
+          </div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <div style="display:flex;justify-content:space-between;align-items:center;background:#f0fdf4;padding:10px 12px;border-radius:10px;border:1px solid #bbf7d0">
               <span style="font-size:11px;font-weight:700;color:#374151">user77** (제2집단)</span>
@@ -592,7 +613,7 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🗳️</i>복수 투표 어뷰징 차단 시뮬레이션</div>
+          <div class="card-title"><i style="font-style:normal;">🗳️</i><span style="flex:1;">복수 투표 어뷰징 차단 시뮬레이션</span></div>
           <div id="vote-list">
             <div class="vote-item" onclick="toggleVote(this,'봉천동 먹자골목 1번가 상인회')">
               <div class="vote-check"></div><label>봉천동 먹자골목 1번가 상인회</label>
@@ -619,7 +640,11 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🛣️</i><span id="bm-roadmap-title">개선 로드맵</span> <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">처방 지표 기반</span></div>
+          <div class="card-title">
+            <i style="font-style:normal;">🛣️</i>
+            <span id="bm-roadmap-title" style="flex:1;">개선 로드맵</span>
+            <span style="font-size:10px;color:#9ca3af;font-weight:400;white-space:nowrap;flex-shrink:0;margin-top:2px;">처방 지표 기반</span>
+          </div>
           <div style="padding-left:4px">
             <div class="timeline-step">
               <div class="step-icon done">✓</div>
@@ -655,7 +680,7 @@
         </div>
 
         <div class="card">
-          <div class="card-title"><i style="font-style:normal;">🗄️</i>과거 선도 상권 아카이브</div>
+          <div class="card-title"><i style="font-style:normal;">🗄️</i><span style="flex:1;">과거 선도 상권 아카이브</span></div>
           <div>
             <div class="data-row" onclick="toast('2025 별빛거리 예산/영상 데이터를 다운로드합니다.')" style="cursor:pointer">
               <div><div style="font-size:13px;font-weight:700;color:#1f2937">2025년: 별빛거리 상점가</div><div style="font-size:10px;color:#9ca3af">디지털 교과서 템플릿 v2.0 (45MB)</div></div>
@@ -672,7 +697,7 @@
         </div>
 
         <div class="card" style="margin-bottom:4px">
-          <div class="card-title"><i style="font-style:normal;">🧮</i>공모 가점 자동 정산 <span style="font-size:10px;color:#9ca3af;font-weight:400;margin-left:auto">170 모듈</span></div>
+          <div class="card-title"><i style="font-style:normal;">🧮</i><span style="flex:1;">공모 가점 자동 정산</span></div>
           <div id="bm-score-container">
             </div>
         </div>
@@ -730,7 +755,7 @@
 <script>
   let popChartInstance = null;
 
-  // ── 1. 데이터 세팅 (깃허브 리포지토리 실제 파일명 및 확장자로 매핑 복구) ──
+  // ── 1. 데이터 세팅 ──
   const shopData = {
     shop1: {
       title: "봉천동 먹자골목 1번가 상인회",
@@ -933,7 +958,6 @@
   function changeShop(id, btn) {
     const data = shopData[id];
     
-    // 글로벌 버튼 스타일 업데이트
     if(btn) {
       document.querySelectorAll('.shop-btn').forEach(b => {
         b.style.background = '#fff'; b.style.color = '#6b7280'; b.style.border = '2px solid #e5e7eb';
@@ -941,12 +965,10 @@
       btn.style.background = '#7c3aed'; btn.style.color = '#fff'; btn.style.border = 'none';
     }
 
-    // AI 성공 예측 활성화 카드 스타일 업데이트
     document.querySelectorAll('.h-card').forEach(el => el.classList.remove('active-card'));
     const hcard = document.getElementById('hcard-' + id);
     if(hcard) hcard.classList.add('active-card');
 
-    // 대시보드 업데이트
     document.getElementById('dashboard-score').innerHTML = data.score + "<span>점</span>";
     document.getElementById('dashboard-trend').innerHTML = data.trend;
     document.getElementById('dashboard-hero').style.background = data.heroBg;
@@ -961,7 +983,6 @@
 
     document.getElementById('incentive-title').innerText = `[${data.title}] 누적 인센티브 및 감점 정산 기록`;
 
-    // 인센티브 리스트 동적 렌더링
     document.getElementById('incentive-list').innerHTML = data.incentives.map(inc => `
       <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
         <div><div style="font-size:13px;font-weight:700;color:#1f2937">${inc.title}</div><div style="font-size:10px;color:#9ca3af">${inc.date}</div></div>
@@ -969,7 +990,6 @@
       </div>
     `).join('');
 
-    // 플랫폼 파일 목록 및 마일스톤 동적 렌더링
     document.getElementById('public-view-files').innerHTML = data.files.map(f => `
       <div class="card" onclick="openBS()" style="cursor:pointer">
         <div style="display:flex;align-items:center;gap:12px">
@@ -1006,7 +1026,6 @@
     }
     document.getElementById('public-view-milestones').innerHTML = msHtml;
 
-    // AI 분석 텍스트 및 이미지
     document.getElementById('ai-shop-title').innerText = `[${data.title}] 환경/간판 정비 분석`;
     document.getElementById('ai-env-title').innerText = `[${data.title}] 골목형 상점가 환경 변화도 상세 분석`;
     document.getElementById('gps-verify-title').innerText = `[${data.title}] 투표 권한 GPS 실시간 검증`;
@@ -1017,7 +1036,6 @@
     document.getElementById('text-after').innerText = data.textAfter;
     document.getElementById('total-val').innerText = data.score + "점";
 
-    // 지표 동적 렌더링
     const metricsContainer = document.getElementById('metrics-list');
     metricsContainer.innerHTML = data.metrics.map(m => `
       <div class="data-row">
@@ -1053,7 +1071,6 @@
       presc.style.display = "none";
     }
 
-    // 벤치마킹 탭 동적 렌더링
     document.getElementById('bm-roadmap-title').innerText = data.title + " 개선 로드맵";
     document.getElementById('bm-hero-title').innerText = data.benchmarking.heroTitle;
     document.getElementById('bm-hero-sub').innerText = data.benchmarking.heroSub;
