@@ -498,13 +498,13 @@
           </div>
 
           <div class="card">
-            <video src="video1.mp4" poster="https://placehold.co/400x200/111/fff?text=thumb_video1.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+            <video src="video1.mp4" poster="thumb_video1.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
             <div style="font-size:13px;font-weight:700;color:#1f2937">봉천동 먹자골목 1번가 상인회 간판 정비 성공 사례</div>
             <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 1.2만회 · 2일 전</div>
           </div>
 
           <div class="card">
-            <video src="video2.mp4" poster="https://placehold.co/400x200/111/fff?text=thumb_video2.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+            <video src="video2.mp4" poster="thumb_video2.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
             <div style="font-size:13px;font-weight:700;color:#1f2937">일곡동 골목형 상점가 야외 펍 축제 성공 사례</div>
             <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 2.5만회 · 1일 전</div>
           </div>
@@ -730,12 +730,12 @@
 <script>
   let popChartInstance = null;
 
-  // ── 1. 데이터 세팅 (인센티브, 플랫폼, 벤치마킹 추가 및 이미지 placehold.co 연동) ──
+  // ── 1. 데이터 세팅 (깃허브 리포지토리 실제 파일명 및 확장자로 매핑 복구) ──
   const shopData = {
     shop1: {
       title: "봉천동 먹자골목 1번가 상인회",
-      beforeImg: "https://placehold.co/600x400/e2e8f0/475569?text=shop1_before.jpg",
-      afterImg: "https://placehold.co/600x400/4c1d95/fff?text=shop1_after.jpg",
+      beforeImg: "shop1_before.jpg",
+      afterImg: "shop1_after.jpg",
       textBefore: "어디에 눈길을 둬야 될지 모를 정도로 난잡했던 옛날 간판들",
       textAfter: "정부 지원을 통해 각 상점의 특색을 살린 간판으로 전면 교체",
       score: 92,
@@ -757,12 +757,12 @@
         { title: "우수 상인회 구청장 표창", date: "2026.05.20 기록분", badge: "포상", badgeClass: "green" }
       ],
       files: [
-        { name: "vid_shop1_signboard.mp4", desc: "봉천동 먹자골목 1번가 상인회 · 15MB", img: "https://placehold.co/140x100/333/fff?text=vid_shop1.mp4", icon: "fa-play", badge: "보안", badgeClass: "red" },
-        { name: "img_shop1_before.png", desc: "초기 실태 조사 보고서 · 3.2MB", img: "https://placehold.co/140x100/ddd/555?text=img_shop1.png", icon: "fa-image", badge: "공개", badgeClass: "green" }
+        { name: "vid_shop1_signboard.mp4", desc: "봉천동 먹자골목 1번가 상인회 · 15MB", img: "shop1_after.jpg", icon: "fa-play", badge: "보안", badgeClass: "red" },
+        { name: "img_shop1_before.png", desc: "초기 실태 조사 보고서 · 3.2MB", img: "shop1_before.jpg", icon: "fa-image", badge: "공개", badgeClass: "green" }
       ],
       milestones: [
-        { name: "M1 초기 단계 (정비 전)", date: "2026.04.01", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M1_shop1.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
-        { name: "M2 중간 점검 (공사 중)", date: "2026.05.20", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M2_shop1.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" }
+        { name: "M1 초기 단계 (정비 전)", date: "2026.04.01", status: "업로드 완료", img: "shop1_before.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M2 중간 점검 (공사 중)", date: "2026.05.20", status: "업로드 완료", img: "shop1_after.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" }
       ],
       benchmarking: {
         heroTitle: "봉천동 상권 벤치마킹",
@@ -778,8 +778,8 @@
     },
     shop2: {
       title: "화개 상인회",
-      beforeImg: "https://placehold.co/600x400/e2e8f0/475569?text=shop2_before.png",
-      afterImg: "https://placehold.co/600x400/b91c1c/fff?text=shop2_after.png",
+      beforeImg: "shop2_before.png",
+      afterImg: "shop2_after.png",
       textBefore: "보행이 불편하고 노후화되어 정비가 필요했던 기존 골목길",
       textAfter: "획일적인 포장만 진행되어 상권 활성화로 이어지지 못한 한산한 거리",
       score: 44, 
@@ -805,11 +805,11 @@
         { title: "주민평가 미달 패널티 적용", date: "2026.06.10 기록분", badge: "감점", badgeClass: "red" }
       ],
       files: [
-        { name: "vid_shop2_street.mp4", desc: "화개 상인회 · 28MB", img: "https://placehold.co/140x100/333/fff?text=vid_shop2.mp4", icon: "fa-play", badge: "공개", badgeClass: "green" }
+        { name: "vid_shop2_street.mp4", desc: "화개 상인회 · 28MB", img: "shop2_after.png", icon: "fa-play", badge: "공개", badgeClass: "green" }
       ],
       milestones: [
-        { name: "M1 초기 단계 (정비 전)", date: "2026.04.15", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M1_shop2.png", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
-        { name: "M2 중간 점검 (공사 중)", date: "-", status: "업로드 지연됨", img: "https://placehold.co/80x60/fee2e2/991b1b?text=지연", color: "#991b1b", bg: "#fef2f2", border: "#fecaca" }
+        { name: "M1 초기 단계 (정비 전)", date: "2026.04.15", status: "업로드 완료", img: "shop2_before.png", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M2 중간 점검 (공사 중)", date: "-", status: "업로드 지연됨", img: "shop2_before.png", color: "#991b1b", bg: "#fef2f2", border: "#fecaca" }
       ],
       benchmarking: {
         heroTitle: "화개 상인회 개선 필요",
@@ -824,8 +824,8 @@
     },
     shop3: {
       title: "일곡동 골목형 상점가",
-      beforeImg: "https://placehold.co/600x400/e2e8f0/475569?text=shop3_before.jpg",
-      afterImg: "https://placehold.co/600x400/4c1d95/fff?text=shop3_after.png",
+      beforeImg: "shop3_before.jpg",
+      afterImg: "shop3_after.png",
       textBefore: "사람들도 잘 안 지나다니고 어두웠던 일반적인 저녁 상점가",
       textAfter: "차 없는 거리를 조성하고 야외 테이블을 내놓아 유럽 펍 축제로 전환",
       score: 95,
@@ -847,13 +847,13 @@
         { title: "국토부 스마트시티 가점", date: "2026.06.12 기록분", badge: "적용", badgeClass: "purple" }
       ],
       files: [
-        { name: "img_shop3_pub.png", desc: "일곡동 골목형 상점가 · 4.2MB", img: "https://placehold.co/140x100/ddd/555?text=img_shop3.png", icon: "fa-image", badge: "검토중", badgeClass: "orange" },
-        { name: "vid_shop3_festival.mp4", desc: "축제 현장 스케치 · 45MB", img: "https://placehold.co/140x100/333/fff?text=vid_shop3.mp4", icon: "fa-play", badge: "보안", badgeClass: "red" }
+        { name: "img_shop3_pub.png", desc: "일곡동 골목형 상점가 · 4.2MB", img: "shop3_after.png", icon: "fa-image", badge: "검토중", badgeClass: "orange" },
+        { name: "vid_shop3_festival.mp4", desc: "축제 현장 스케치 · 45MB", img: "shop3_before.jpg", icon: "fa-play", badge: "보안", badgeClass: "red" }
       ],
       milestones: [
-        { name: "M1 초기 단계 (정비 전)", date: "2026.03.10", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M1_shop3.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
-        { name: "M2 중간 점검 (공사 중)", date: "2026.04.25", status: "업로드 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M2_shop3.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
-        { name: "M3 최종 결과 (완성)", date: "2026.06.01", status: "행정 검증 완료", img: "https://placehold.co/80x60/e2e8f0/475569?text=M3_shop3.png", color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe" }
+        { name: "M1 초기 단계 (정비 전)", date: "2026.03.10", status: "업로드 완료", img: "shop3_before.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M2 중간 점검 (공사 중)", date: "2026.04.25", status: "업로드 완료", img: "shop3_before.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { name: "M3 최종 결과 (완성)", date: "2026.06.01", status: "행정 검증 완료", img: "shop3_after.png", color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe" }
       ],
       benchmarking: {
         heroTitle: "일곡동 골목형 상점가",
@@ -941,7 +941,7 @@
       btn.style.background = '#7c3aed'; btn.style.color = '#fff'; btn.style.border = 'none';
     }
 
-    // ⑥ AI 성공 예측 활성화 카드 스타일 업데이트
+    // AI 성공 예측 활성화 카드 스타일 업데이트
     document.querySelectorAll('.h-card').forEach(el => el.classList.remove('active-card'));
     const hcard = document.getElementById('hcard-' + id);
     if(hcard) hcard.classList.add('active-card');
@@ -961,7 +961,7 @@
 
     document.getElementById('incentive-title').innerText = `[${data.title}] 누적 인센티브 및 감점 정산 기록`;
 
-    // ① 인센티브 리스트 동적 렌더링
+    // 인센티브 리스트 동적 렌더링
     document.getElementById('incentive-list').innerHTML = data.incentives.map(inc => `
       <div class="data-row" onclick="toast('상세 정산 내역을 불러옵니다.')" style="cursor:pointer">
         <div><div style="font-size:13px;font-weight:700;color:#1f2937">${inc.title}</div><div style="font-size:10px;color:#9ca3af">${inc.date}</div></div>
@@ -969,7 +969,7 @@
       </div>
     `).join('');
 
-    // ② 플랫폼 파일 목록 및 마일스톤 동적 렌더링
+    // 플랫폼 파일 목록 및 마일스톤 동적 렌더링
     document.getElementById('public-view-files').innerHTML = data.files.map(f => `
       <div class="card" onclick="openBS()" style="cursor:pointer">
         <div style="display:flex;align-items:center;gap:12px">
@@ -1011,7 +1011,6 @@
     document.getElementById('ai-env-title').innerText = `[${data.title}] 골목형 상점가 환경 변화도 상세 분석`;
     document.getElementById('gps-verify-title').innerText = `[${data.title}] 투표 권한 GPS 실시간 검증`;
 
-    // ④ 이미지 파일 이름 준수 & 깨짐 방지용 Placehold 맵핑 데이터 로드
     document.getElementById('ai-img-before').src = data.beforeImg;
     document.getElementById('ai-img-after').src = data.afterImg;
     document.getElementById('text-before').innerText = data.textBefore;
@@ -1054,7 +1053,7 @@
       presc.style.display = "none";
     }
 
-    // ③ 벤치마킹 탭 로드맵, 모델, 스코어 동적 렌더링
+    // 벤치마킹 탭 동적 렌더링
     document.getElementById('bm-roadmap-title').innerText = data.title + " 개선 로드맵";
     document.getElementById('bm-hero-title').innerText = data.benchmarking.heroTitle;
     document.getElementById('bm-hero-sub').innerText = data.benchmarking.heroSub;
