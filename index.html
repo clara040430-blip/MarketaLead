@@ -142,8 +142,7 @@
     /* ── 토스트 ── */
     #toast-wrap {
       position: fixed;
-      /* 화면 하단 메뉴 영역을 가리지 않도록 위로 더 띄움 */
-      bottom: 110px; 
+      top: 110px; 
       left: 50%;
       transform: translateX(-50%);
       z-index: 200;
@@ -152,22 +151,21 @@
       pointer-events: none;
     }
     .toast-msg {
-      /* 반투명 처리 및 뒷배경 블러 처리로 덜 걸리적거리게 수정 */
-      background: rgba(76, 29, 149, 0.85);
+      background: rgba(186, 230, 253, 0.85);
       backdrop-filter: blur(4px);
-      color: #fff;
-      font-size: 12px; font-weight: 600;
+      color: #1e3a8a;
+      font-size: 12px; font-weight: 700;
       padding: 10px 20px;
       border-radius: 24px;
       white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
       animation: toastAnim 2.5s ease forwards;
     }
     @keyframes toastAnim {
-      0%   { opacity:0; transform:translateY(10px); }
+      0%   { opacity:0; transform:translateY(-10px); }
       12%  { opacity:1; transform:translateY(0); }
       80%  { opacity:1; }
-      100% { opacity:0; transform:translateY(-6px); }
+      100% { opacity:0; transform:translateY(-10px); }
     }
 
     /* ── 카드 공통 ── */
@@ -181,9 +179,9 @@
     .card-title {
       font-size: 13px; font-weight: 700; color: #374151;
       margin-bottom: 12px;
-      display: flex; align-items: flex-start; /* 글씨 래핑 대비 정렬 수정 */
+      display: flex; align-items: flex-start;
       gap: 6px;
-      word-break: keep-all; /* 한국어 단어 중간에 끊기지 않도록 설정 */
+      word-break: keep-all; 
       line-height: 1.4;
     }
     .card-title i {
@@ -293,6 +291,7 @@
       display:flex; align-items:center; justify-content:center;
       font-size:12px; font-weight:700; flex-shrink:0;
       margin-top:2px;
+      z-index: 2;
     }
     .step-icon.done   { background:#7c3aed; color:#fff; }
     .step-icon.active { background:#f59e0b; color:#fff; }
@@ -301,6 +300,7 @@
       position:absolute; left:13px; top:30px;
       width:2px; height:calc(100% - 4px);
       background:#e5e7eb;
+      z-index: 1;
     }
     .step-icon.done ~ .step-line { background:#7c3aed; }
 
@@ -380,6 +380,14 @@
     }
     .score-total .t-label { font-size:12px; color:#c4b5fd; }
     .score-total .t-val   { font-size:18px; font-weight:800; }
+
+    /* ── 추가: 보안 안내 문구 ── */
+    .lock-hint {
+      color: #9ca3af;
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 6px;
+    }
 
     .no-scroll::-webkit-scrollbar { display:none; }
     .no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
@@ -499,7 +507,6 @@
 
         <div id="public-view">
           <div style="font-size:11px;color:#9ca3af;font-weight:700;padding:10px 14px 4px">총 842건 · 무결성 검증 완료</div>
-
           <div id="public-view-files"></div>
 
           <div class="card">
@@ -513,18 +520,7 @@
             <i style="color:#ef4444;font-size:22px; font-style:normal;">📺</i>
             <span style="font-weight:700;font-size:16px">YouTube API 연동</span>
           </div>
-
-          <div class="card">
-            <video src="video1.mp4" poster="thumb_video1.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
-            <div style="font-size:13px;font-weight:700;color:#1f2937">봉천동 먹자골목 1번가 상인회 간판 정비 성공 사례</div>
-            <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 1.2만회 · 2일 전</div>
-          </div>
-
-          <div class="card">
-            <video src="video2.mp4" poster="thumb_video2.png" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
-            <div style="font-size:13px;font-weight:700;color:#1f2937">일곡동 골목형 상점가 야외 펍 축제 성공 사례</div>
-            <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 2.5만회 · 1일 전</div>
-          </div>
+          <div id="youtube-view-list" style="padding-bottom:10px;"></div>
         </div>
       </div>
 
@@ -645,35 +641,8 @@
             <span id="bm-roadmap-title" style="flex:1;">개선 로드맵</span>
             <span style="font-size:10px;color:#9ca3af;font-weight:400;white-space:nowrap;flex-shrink:0;margin-top:2px;">처방 지표 기반</span>
           </div>
-          <div style="padding-left:4px">
-            <div class="timeline-step">
-              <div class="step-icon done">✓</div>
-              <div>
-                <div style="font-size:12px;font-weight:700;color:#7c3aed">STEP 1 완료</div>
-                <div style="font-size:11px;color:#6b7280">마일스톤 M1 영상 업로드 완료</div>
-              </div>
+          <div id="bm-roadmap-steps" style="padding-left:4px">
             </div>
-            <div class="timeline-step">
-              <div class="step-icon active">▶</div>
-              <div style="flex:1">
-                <div style="font-size:12px;font-weight:700;color:#f59e0b">STEP 2 진행 중</div>
-                <div style="font-size:11px;color:#6b7280;margin-bottom:6px">주민 평가 보강 활동 (달성률 62%)</div>
-                <div class="prog-wrap"><div class="prog-bar orange" style="width:62%"></div></div>
-              </div>
-            </div>
-            <div class="timeline-step">
-              <div class="step-icon wait">3</div>
-              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 3 대기</div><div style="font-size:11px;color:#9ca3af">상인회 영상 참여율 70% 달성 필요</div></div>
-            </div>
-            <div class="timeline-step">
-              <div class="step-icon wait">4</div>
-              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 4 대기</div><div style="font-size:11px;color:#9ca3af">기지국 유동인구 기준치 달성 필요</div></div>
-            </div>
-            <div class="timeline-step" style="margin-bottom:0">
-              <div class="step-icon wait">5</div>
-              <div><div style="font-size:12px;font-weight:700;color:#9ca3af">STEP 5 대기</div><div style="font-size:11px;color:#9ca3af">M3 최종 영상 업로드 후 AI 재진단</div></div>
-            </div>
-          </div>
           <div style="margin-top:14px;background:#f0fdf4;border-radius:12px;padding:10px 14px;font-size:12px;color:#065f46;font-weight:700">
             🎯 목표 달성 시 예상 성공 확률: <span style="font-size:16px;color:#10b981" id="bm-expected-prob">0%</span>
           </div>
@@ -789,6 +758,9 @@
         { name: "M1 초기 단계 (정비 전)", date: "2026.04.01", status: "업로드 완료", img: "shop1_before.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
         { name: "M2 중간 점검 (공사 중)", date: "2026.05.20", status: "업로드 완료", img: "shop1_after.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" }
       ],
+      youtubeVideos: [
+        { src: "video1.mp4", poster: "thumb_video1.png", title: "봉천동 먹자골목 1번가 상인회 간판 정비 성공 사례", viewCount: "1.2만회", daysAgo: "2일 전" }
+      ],
       benchmarking: {
         heroTitle: "봉천동 상권 벤치마킹",
         heroSub: "우수 간판 정비 사례 · 데이터 패키징 진행 중",
@@ -798,7 +770,14 @@
           { label: "중기부 스마트 상점가", val: "+5점" }
         ],
         totalScore: "+8점",
-        payback: "15%"
+        payback: "15%",
+        roadmapSteps: [
+          { status: "done", title: "STEP 1 완료", desc: "마일스톤 M1 영상 업로드 완료" },
+          { status: "done", title: "STEP 2 완료", desc: "주민 평가 보강 활동 완료" },
+          { status: "done", title: "STEP 3 완료", desc: "상인회 영상 참여율 70% 달성" },
+          { status: "active", title: "STEP 4 진행 중", desc: "기지국 유동인구 35분 체류 목표 (달성률 85%)", progress: 85 },
+          { status: "wait", title: "STEP 5 대기", desc: "M3 최종 영상 업로드 후 AI 재진단" }
+        ]
       }
     },
     shop2: {
@@ -822,8 +801,8 @@
       ],
       prescriptions: [
         "• 주민 평가 점수: 성공 모델 대비 -30% 부족",
-        "• 상인회 참여율: 기준치 미달 (현재 38%)",
-        "• 체류 시간: 기준 35분 미달 (현재 18분)"
+        "• 상인회 참여율: 기준치 <strong style=\"color:#ef4444; font-size:1.1em\">미달</strong> (현재 38%)",
+        "• 체류 시간: 기준 35분 <strong style=\"color:#ef4444; font-size:1.1em\">미달</strong> (현재 18분)"
       ],
       incentives: [
         { title: "예산 집행 지연 경고", date: "2026.06.18 기록분", badge: "경고", badgeClass: "orange" },
@@ -836,6 +815,7 @@
         { name: "M1 초기 단계 (정비 전)", date: "2026.04.15", status: "업로드 완료", img: "shop2_before.png", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
         { name: "M2 중간 점검 (공사 중)", date: "-", status: "업로드 지연됨", img: "shop2_before.png", color: "#991b1b", bg: "#fef2f2", border: "#fecaca" }
       ],
+      youtubeVideos: [],
       benchmarking: {
         heroTitle: "화개 상인회 개선 필요",
         heroSub: "기준치 미달 · 긴급 처방 데이터 벤치마킹 필요",
@@ -844,7 +824,14 @@
           { label: "국토부 스마트시티 (보류)", val: "0점" }
         ],
         totalScore: "0점",
-        payback: "0%"
+        payback: "0%",
+        roadmapSteps: [
+          { status: "done", title: "STEP 1 완료", desc: "마일스톤 M1 영상 업로드 완료" },
+          { status: "active", title: "STEP 2 정체", desc: "주민 평가 보강 활동 미흡 (달성률 30%)", progress: 30 },
+          { status: "wait", title: "STEP 3 대기", desc: "상인회 영상 참여율 70% 달성 필요" },
+          { status: "wait", title: "STEP 4 대기", desc: "기지국 유동인구 기준치 달성 필요" },
+          { status: "wait", title: "STEP 5 대기", desc: "M3 최종 영상 업로드 후 AI 재진단" }
+        ]
       }
     },
     shop3: {
@@ -880,6 +867,9 @@
         { name: "M2 중간 점검 (공사 중)", date: "2026.04.25", status: "업로드 완료", img: "shop3_before.jpg", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
         { name: "M3 최종 결과 (완성)", date: "2026.06.01", status: "행정 검증 완료", img: "shop3_after.png", color: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe" }
       ],
+      youtubeVideos: [
+        { src: "video2.mp4", poster: "thumb_video2.png", title: "일곡동 골목형 상점가 야외 펍 축제 성공 사례", viewCount: "2.5만회", daysAgo: "1일 전" }
+      ],
       benchmarking: {
         heroTitle: "일곡동 골목형 상점가",
         heroSub: "2026 선도 상권 모델 · 벤치마킹 데이터 패키징 완료",
@@ -891,7 +881,14 @@
           { label: "온누리 상품권 페이백", val: "15% 적용" }
         ],
         totalScore: "+10점",
-        payback: "15%"
+        payback: "15%",
+        roadmapSteps: [
+          { status: "done", title: "STEP 1 완료", desc: "마일스톤 M1 영상 업로드 완료" },
+          { status: "done", title: "STEP 2 완료", desc: "주민 평가 보강 활동 달성" },
+          { status: "done", title: "STEP 3 완료", desc: "상인회 영상 참여율 초과 달성" },
+          { status: "done", title: "STEP 4 완료", desc: "기지국 유동인구 체류 시간 달성" },
+          { status: "done", title: "STEP 5 완료", desc: "M3 최종 영상 업로드 및 AI 재진단 완료" }
+        ]
       }
     }
   };
@@ -990,6 +987,7 @@
       </div>
     `).join('');
 
+    // 플랫폼 탭 공공 뷰 파일 리스트 동적 렌더링 (보안 안내 힌트 포함)
     document.getElementById('public-view-files').innerHTML = data.files.map(f => `
       <div class="card" onclick="openBS()" style="cursor:pointer">
         <div style="display:flex;align-items:center;gap:12px">
@@ -1000,6 +998,7 @@
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700;color:#1f2937">${f.name}</div>
             <div style="font-size:10px;color:#9ca3af">${f.desc}</div>
+            ${f.badgeClass === 'red' ? `<div class="lock-hint">🔒 보안 잠금 영상 · 카드를 눌러 결재 상태를 확인하세요 <i class="fas fa-chevron-right" style="font-size:9px; margin-left:3px;"></i></div>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
             <span class="badge ${f.badgeClass}">${f.badge}</span>
@@ -1034,8 +1033,8 @@
     document.getElementById('ai-img-after').src = data.afterImg;
     document.getElementById('text-before').innerText = data.textBefore;
     document.getElementById('text-after').innerText = data.textAfter;
+    
     document.getElementById('total-val').innerText = data.score + "점";
-
     const metricsContainer = document.getElementById('metrics-list');
     metricsContainer.innerHTML = data.metrics.map(m => `
       <div class="data-row">
@@ -1058,7 +1057,7 @@
       scoreBox.style.background = "#fef2f2";
       scoreBox.style.border = "2px solid #fecaca";
       label.style.color = "#991b1b";
-      label.innerHTML = "🚨 위험: 물리적 개선 지표 미달";
+      label.innerHTML = "🚨 위험: 물리적 개선 지표 <strong style='color:#ef4444; font-size:1.1em;'>미달</strong>";
       val.style.color = "#ef4444";
       presc.style.display = "block";
       document.getElementById('prescription-list').innerHTML = data.prescriptions.map(p => `<div>${p}</div>`).join('');
@@ -1066,7 +1065,7 @@
       scoreBox.style.background = "#4c1d95";
       scoreBox.style.border = "none";
       label.style.color = "#c4b5fd";
-      label.innerText = "종합 환경 개선 점수 (정상)";
+      label.innerHTML = "종합 환경 개선 점수 (<strong style='color:#34d399; font-size:1.1em;'>정상</strong>)";
       val.style.color = "#fff";
       presc.style.display = "none";
     }
@@ -1089,6 +1088,43 @@
       </button>
     `;
     document.getElementById('bm-score-container').innerHTML = scoreHtml;
+
+    const ytList = document.getElementById('youtube-view-list');
+    if (data.youtubeVideos && data.youtubeVideos.length > 0) {
+      ytList.innerHTML = data.youtubeVideos.map(vid => `
+        <div class="card">
+          <video src="${vid.src}" poster="${vid.poster}" controls playsinline style="width:100%;height:160px;object-fit:cover;border-radius:12px;margin-bottom:10px;background:#000;"></video>
+          <div style="font-size:13px;font-weight:700;color:#1f2937">${vid.title}</div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:4px">조회수 ${vid.viewCount} · ${vid.daysAgo}</div>
+        </div>
+      `).join('');
+    } else {
+      ytList.innerHTML = `
+        <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; color:#9ca3af;">
+          <i class="fas fa-video-slash" style="font-size:32px; margin-bottom:10px; color:#d1d5db;"></i>
+          <div style="font-size:13px; font-weight:700;">아직 업로드된 영상이 없습니다.</div>
+        </div>
+      `;
+    }
+
+    document.getElementById('bm-roadmap-steps').innerHTML = data.benchmarking.roadmapSteps.map((step, index, arr) => {
+      const isLast = index === arr.length - 1;
+      const lineHtml = isLast ? '' : '<div class="step-line"></div>';
+      let progHtml = (step.status === 'active' && step.progress) ? `<div class="prog-wrap"><div class="prog-bar orange" style="width:${step.progress}%"></div></div>` : '';
+      let titleColor = step.status === 'done' ? '#7c3aed' : (step.status === 'active' ? '#f59e0b' : '#9ca3af');
+      let iconStr = step.status === 'done' ? '✓' : (step.status === 'active' ? '▶' : (index + 1));
+      return `
+        <div class="timeline-step" ${isLast ? 'style="margin-bottom:0"' : ''}>
+          <div class="step-icon ${step.status}">${iconStr}</div>
+          ${lineHtml}
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:700;color:${titleColor}">${step.title}</div>
+            <div style="font-size:11px;color:${step.status === 'wait' ? '#9ca3af' : '#6b7280'};${progHtml ? 'margin-bottom:6px' : ''}">${step.desc}</div>
+            ${progHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
 
     updateSlider(50);
     document.getElementById('slider-range').value = 50;
