@@ -142,30 +142,31 @@
     /* ── 토스트 ── */
     #toast-wrap {
       position: fixed;
-      top: 110px; 
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%);
       z-index: 200;
-      display: flex; flex-direction: column;
-      align-items: center; gap: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       pointer-events: none;
     }
     .toast-msg {
-      background: rgba(186, 230, 253, 0.85);
+      background: rgba(186, 230, 253, 0.55);
       backdrop-filter: blur(4px);
-      color: #1e3a8a;
+      color: #0369a1;
       font-size: 12px; font-weight: 700;
       padding: 10px 20px;
       border-radius: 24px;
       white-space: nowrap;
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      animation: toastAnim 2.5s ease forwards;
+      animation: toastAnim 2.6s ease forwards;
     }
     @keyframes toastAnim {
-      0%   { opacity:0; transform:translateY(-10px); }
-      12%  { opacity:1; transform:translateY(0); }
-      80%  { opacity:1; }
-      100% { opacity:0; transform:translateY(-10px); }
+      0%   { opacity:0; transform:scale(0.9); }
+      12%  { opacity:1; transform:scale(1); }
+      80%  { opacity:1; transform:scale(1); }
+      100% { opacity:0; transform:scale(0.9); }
     }
 
     /* ── 카드 공통 ── */
@@ -381,14 +382,6 @@
     .score-total .t-label { font-size:12px; color:#c4b5fd; }
     .score-total .t-val   { font-size:18px; font-weight:800; }
 
-    /* ── 추가: 보안 안내 문구 ── */
-    .lock-hint {
-      color: #9ca3af;
-      font-size: 10px;
-      font-weight: 500;
-      margin-top: 6px;
-    }
-
     .no-scroll::-webkit-scrollbar { display:none; }
     .no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
   </style>
@@ -497,12 +490,17 @@
 
       <div id="tab-platform" class="view-section">
 
-        <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f3f0ff;position:sticky;top:0;z-index:20">
-          <span id="platform-title" style="font-size:13px;font-weight:700;color:#374151">공공 전용 영상 DB (보안)</span>
-          <label class="toggle-wrap">
-            <input type="checkbox" id="platform-toggle" checked onchange="togglePlatform()">
-            <span class="toggle-slider"></span>
-          </label>
+        <div style="background:#fff;border-bottom:1px solid #f3f0ff;position:sticky;top:0;z-index:20">
+          <div style="padding:12px 16px 4px;display:flex;align-items:center;justify-content:space-between;">
+            <span id="platform-title" style="font-size:13px;font-weight:700;color:#374151">공공 전용 영상 DB (보안)</span>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="platform-toggle" checked onchange="togglePlatform()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div id="toggle-hint" style="padding:0 16px 12px;font-size:10px;color:#9ca3af;font-weight:500;">
+            🔒 여기를 눌러 보안을 해제하면 외부 유튜브 영상을 볼 수 있어요
+          </div>
         </div>
 
         <div id="public-view">
@@ -913,13 +911,29 @@
     el.classList.add('active');
   }
 
+  // 토스트 알림 큐 로직 적용
+  let toastQueue = [];
+  let isToastShowing = false;
+
   function toast(msg) {
+    toastQueue.push(msg);
+    processToastQueue();
+  }
+
+  function processToastQueue() {
+    if (isToastShowing || toastQueue.length === 0) return;
+    isToastShowing = true;
+    const msg = toastQueue.shift();
     const wrap = document.getElementById('toast-wrap');
     const div = document.createElement('div');
     div.className = 'toast-msg';
     div.textContent = msg;
     wrap.appendChild(div);
-    setTimeout(() => div.remove(), 2600);
+    setTimeout(() => {
+      div.remove();
+      isToastShowing = false;
+      processToastQueue();
+    }, 2600);
   }
 
   function togglePlatform() {
@@ -927,6 +941,9 @@
     document.getElementById('platform-title').textContent = isPublic ? '공공 전용 영상 DB (보안)' : '외부 API 연동 (유튜브)';
     document.getElementById('public-view').style.display = isPublic ? 'block' : 'none';
     document.getElementById('youtube-view').style.display = isPublic ? 'none' : 'block';
+    document.getElementById('toggle-hint').innerHTML = isPublic
+      ? '🔒 여기를 눌러 보안을 해제하면 외부 유튜브 영상을 볼 수 있어요'
+      : '🔓 다시 눌러 보안 모드(공공 DB)로 돌아갈 수 있어요';
     toast(isPublic ? '공공 전용 보안망으로 스위칭 되었습니다.' : '외부 유튜브 API 연동 모드로 전환되었습니다.');
   }
 
@@ -987,7 +1004,6 @@
       </div>
     `).join('');
 
-    // 플랫폼 탭 공공 뷰 파일 리스트 동적 렌더링 (보안 안내 힌트 포함)
     document.getElementById('public-view-files').innerHTML = data.files.map(f => `
       <div class="card" onclick="openBS()" style="cursor:pointer">
         <div style="display:flex;align-items:center;gap:12px">
@@ -998,7 +1014,6 @@
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700;color:#1f2937">${f.name}</div>
             <div style="font-size:10px;color:#9ca3af">${f.desc}</div>
-            ${f.badgeClass === 'red' ? `<div class="lock-hint">🔒 보안 잠금 영상 · 카드를 눌러 결재 상태를 확인하세요 <i class="fas fa-chevron-right" style="font-size:9px; margin-left:3px;"></i></div>` : ''}
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
             <span class="badge ${f.badgeClass}">${f.badge}</span>
