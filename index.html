@@ -139,34 +139,36 @@
     .nav-item i { font-size: 18px; }
     .nav-item.active { color: #7c3aed; }
 
-    /* ── 토스트 ── */
+    /* ── 토스트 (화면 상단 배너 형태) ── */
     #toast-wrap {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+      right: 0;
+      padding-top: env(safe-area-inset-top);
       z-index: 200;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
       pointer-events: none;
     }
     .toast-msg {
+      width: 100%;
       background: rgba(186, 230, 253, 0.55);
       backdrop-filter: blur(4px);
       color: #0369a1;
-      font-size: 12px; font-weight: 700;
-      padding: 10px 20px;
-      border-radius: 24px;
-      white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
       animation: toastAnim 2.6s ease forwards;
     }
     @keyframes toastAnim {
-      0%   { opacity:0; transform:scale(0.9); }
-      12%  { opacity:1; transform:scale(1); }
-      80%  { opacity:1; transform:scale(1); }
-      100% { opacity:0; transform:scale(0.9); }
+      0%   { opacity:0; transform: translateY(-100%); }
+      10%  { opacity:1; transform: translateY(0); }
+      85%  { opacity:1; transform: translateY(0); }
+      100% { opacity:0; transform: translateY(-100%); }
     }
 
     /* ── 카드 공통 ── */
