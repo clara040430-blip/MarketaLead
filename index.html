@@ -386,10 +386,62 @@
 
     .no-scroll::-webkit-scrollbar { display:none; }
     .no-scroll { -ms-overflow-style:none; scrollbar-width:none; }
+
+    /* ── 추가 1: 우리 단골 동네와 같은 최대 480px 모바일 앱 프레임 ── */
+    html, body { width: 100%; }
+    body {
+      width: 100%;
+      background: #f1f2f6;
+    }
+    #app {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 0 24px rgba(0,0,0,0.10);
+      isolation: isolate;
+    }
+    #main-app {
+      width: 100%;
+    }
+    /* 앱 내부의 고정 알림과 바텀시트가 PC 전체 너비로 펼쳐지지 않도록 제한 */
+    #toast-wrap, #bottom-sheet, #bs-overlay {
+      position: absolute;
+    }
+
+    /* ── 추가 2: intro.png 이미지 스플래시 ── */
+    #intro-splash {
+      position: absolute;
+      inset: 0;
+      z-index: 1000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #7126d9;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    #intro-splash.intro-hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #intro-splash img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain; /* 제목과 캐릭터가 잘리지 않도록 원본 전체를 표시 */
+      object-position: center;
+    }
   </style>
 </head>
 <body>
 <div id="app">
+  <!-- 추가: 페이지 접속 시 2.5초간 보여 주는 인트로 (원본 로그인/기능 코드 유지) -->
+  <div id="intro-splash" aria-label="상권 활성화 지원 시스템 시작 화면">
+    <img src="intro.png" alt="상권 활성화 지원 시스템" fetchpriority="high">
+  </div>
+
 
   <div id="view-login">
     <i class="login-icon" style="font-style: normal;">🏛️</i>
@@ -1213,6 +1265,36 @@
       }
     });
   }
+</script>
+
+<!-- 추가: 인트로 이미지 로드 후 2.5초 표시, 0.5초 페이드아웃 -->
+<script>
+  (() => {
+    const intro = document.getElementById('intro-splash');
+    const image = intro.querySelector('img');
+    let started = false;
+    let finished = false;
+    function finishIntro() {
+      if (finished) return;
+      finished = true;
+      intro.classList.add('intro-hide');
+      setTimeout(() => intro.remove(), 500);
+    }
+    function startIntro() {
+      if (started || finished) return;
+      started = true;
+      setTimeout(finishIntro, 2500);
+    }
+    if (image.complete) {
+      if (image.naturalWidth > 0) startIntro();
+      else finishIntro();
+    } else {
+      image.addEventListener('load', startIntro, { once: true });
+      image.addEventListener('error', finishIntro, { once: true });
+    }
+    /* 로딩이 중단된 환경에서도 화면이 영구히 가려지지 않도록 보호 */
+    setTimeout(finishIntro, 7000);
+  })();
 </script>
 </body>
 </html>
